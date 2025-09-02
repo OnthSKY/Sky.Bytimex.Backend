@@ -1,0 +1,492 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="DatabaseErrorDefault" xml:space="preserve">
+    <value>Veritabanı hatası oluştu</value>
+  </data>
+  <data name="DefaultAddressAlreadyExistsForBuyer" xml:space="preserve">
+    <value>Alıcının zaten varsayılan adresi var</value>
+  </data>
+  <data name="DescriptionMaxLength" xml:space="preserve">
+    <value>Açıklama 500 karakteri geçmemelidir</value>
+  </data>
+  <data name="EitherBuyerIdOrOrderIdMustBeProvided" xml:space="preserve">
+    <value>Alıcı ID veya sipariş ID'sinden biri sağlanmalıdır</value>
+  </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>E-posta geçersiz</value>
+  </data>
+  <data name="EmailIsRequired" xml:space="preserve">
+    <value>E-posta adresi gereklidir</value>
+  </data>
+  <data name="Erp.ConfigNotFound" xml:space="preserve">
+    <value>ERP konfigürasyonu bulunamadı.</value>
+  </data>
+  <data name="FirstNameCannotBeEmpty" xml:space="preserve">
+    <value>Ad boş olamaz</value>
+  </data>
+  <data name="FirstNameIsRequired" xml:space="preserve">
+    <value>Ad gereklidir</value>
+  </data>
+  <data name="FirstNameMaxLength" xml:space="preserve">
+    <value>Ad 50 karakterden uzun olamaz</value>
+  </data>
+  <data name="ForbiddenAccess" xml:space="preserve">
+    <value>Yetkisiz işlem</value>
+  </data>
+  <data name="InternalServerError" xml:space="preserve">
+    <value>Sunucu hatası</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Giriş bilgileri geçersiz</value>
+  </data>
+  <data name="InvalidEmailFormat" xml:space="preserve">
+    <value>Geçersiz e-posta formatı</value>
+  </data>
+  <data name="InvalidPaymentStatus" xml:space="preserve">
+    <value>Geçersiz ödeme durumu</value>
+  </data>
+  <data name="InvalidPaymentType" xml:space="preserve">
+    <value>Geçersiz ödeme türü</value>
+  </data>
+  <data name="InvalidUserId" xml:space="preserve">
+    <value>Geçersiz kullanıcı ID</value>
+  </data>
+  <data name="LastNameCannotBeEmpty" xml:space="preserve">
+    <value>Soyad boş olamaz</value>
+  </data>
+  <data name="LastNameIsRequired" xml:space="preserve">
+    <value>Soyad gereklidir</value>
+  </data>
+  <data name="LastNameMaxLength" xml:space="preserve">
+    <value>Soyad 50 karakterden uzun olamaz</value>
+  </data>
+  <data name="LoginSuccessful" xml:space="preserve">
+    <value>Giriş başarılı</value>
+  </data>
+  <data name="LogoutSuccessful" xml:space="preserve">
+    <value>Çıkış başarılı</value>
+  </data>
+  <data name="OrderDirectionPropNotFound" xml:space="preserve">
+    <value>Sıralama yönü sadece ASC veya DESC olabilir.</value>
+  </data>
+  <data name="OrderNotFound" xml:space="preserve">
+    <value>Sipariş bulunamadı</value>
+  </data>
+  <data name="PasswordIsRequired" xml:space="preserve">
+    <value>Şifre gereklidir</value>
+  </data>
+  <data name="PasswordLowercaseRequired" xml:space="preserve">
+    <value>Şifre en az bir küçük harf içermelidir</value>
+  </data>
+  <data name="PasswordMinLength" xml:space="preserve">
+    <value>Şifre en az 8 karakter olmalıdır</value>
+  </data>
+  <data name="PasswordNumberRequired" xml:space="preserve">
+    <value>Şifre en az bir rakam içermelidir</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Şifre alanı zorunlu</value>
+  </data>
+  <data name="PasswordSpecialCharRequired" xml:space="preserve">
+    <value>Şifre en az bir özel karakter içermelidir</value>
+  </data>
+  <data name="PasswordUppercaseRequired" xml:space="preserve">
+    <value>Şifre en az bir büyük harf içermelidir</value>
+  </data>
+  <data name="PermissionIdCannotBeEmpty" xml:space="preserve">
+    <value>İzin ID boş olamaz</value>
+  </data>
+  <data name="PermissionIdIsRequired" xml:space="preserve">
+    <value>İzin ID zorunludur</value>
+  </data>
+  <data name="PermissionNameIsRequired" xml:space="preserve">
+    <value>İzin adı zorunludur</value>
+  </data>
+  <data name="PermissionNameMaxLength" xml:space="preserve">
+    <value>İzin adı 50 karakteri geçmemelidir</value>
+  </data>
+  <data name="PhoneIsRequired" xml:space="preserve">
+    <value>Telefon numarası gereklidir</value>
+  </data>
+  <data name="RefreshSuccessful" xml:space="preserve">
+    <value>İşlem Başarılı</value>
+  </data>
+  <data name="RefreshTokenInvalid" xml:space="preserve">
+    <value>Refresh token geçersiz</value>
+  </data>
+  <data name="RefreshTokenNotFound" xml:space="preserve">
+    <value>Refresh token bulunamadı</value>
+  </data>
+  <data name="RegistrationFailed" xml:space="preserve">
+    <value>Kayıt işlemi başarısız oldu</value>
+  </data>
+  <data name="RoleIdCannotBeEmpty" xml:space="preserve">
+    <value>RoleId alanı zorunlu</value>
+  </data>
+  <data name="RoleIdIsRequired" xml:space="preserve">
+    <value>Rol ID zorunludur</value>
+  </data>
+  <data name="RoleNameIsRequired" xml:space="preserve">
+    <value>Rol adı zorunludur</value>
+  </data>
+  <data name="RoleNameMaxLength" xml:space="preserve">
+    <value>Rol adı 50 karakteri geçmemelidir</value>
+  </data>
+  <data name="RoleNotFound" xml:space="preserve">
+    <value>Rol bulunamadı</value>
+  </data>
+  <data name="RoleNotFoundWithId" xml:space="preserve">
+    <value>ID'si {0} olan rol bulunamadı.</value>
+  </data>
+  <data name="StatusCannotBeEmpty" xml:space="preserve">
+    <value>Durum boş olamaz</value>
+  </data>
+  <data name="StatusIsRequired" xml:space="preserve">
+    <value>Durum zorunludur</value>
+  </data>
+  <data name="StatusMustBeActiveOrInactive" xml:space="preserve">
+    <value>Durum Aktif ya da Pasif olmalıdır</value>
+  </data>
+  <data name="UnauthorizedAccess" xml:space="preserve">
+    <value>Yetkisiz erişim</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Beklenmeyen bir hata oluştu</value>
+  </data>
+  <data name="UserAlreadyExists" xml:space="preserve">
+    <value>Bu e-posta adresi ile kayıtlı bir kullanıcı zaten mevcut</value>
+  </data>
+  <data name="UserIdCannotBeEmpty" xml:space="preserve">
+    <value>UserId alanı zorunlu</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>Kullanıcı Bulunamadı</value>
+  </data>
+  <data name="UserNotFoundWithEmails" xml:space="preserve">
+    <value>eMail'i {0} olan kullanıcı bulunamadı.</value>
+  </data>
+  <data name="UserNotFoundWithId" xml:space="preserve">
+    <value>ID'si {0} olan kullanıcı bulunamadı.</value>
+  </data>
+  <data name="UsernameRequired" xml:space="preserve">
+    <value>Kullanıcı Adı alanı zorunlu</value>
+  </data>
+  <data name="Validation.AuthToken.RequiredIfAuthenticated" xml:space="preserve">
+    <value>Kimlik doğrulama isteniyorsa AuthToken girilmelidir.</value>
+  </data>
+  <data name="Validation.ContentType.Required" xml:space="preserve">
+    <value>İçerik tipi (Content-Type) boş olamaz.</value>
+  </data>
+  <data name="Validation.ContentType.Unsupported" xml:space="preserve">
+    <value>Yalnızca 'application/json' desteklenmektedir.</value>
+  </data>
+  <data name="Validation.Method.Required" xml:space="preserve">
+    <value>HTTP method belirtilmelidir.</value>
+  </data>
+  <data name="Validation.Url.Invalid" xml:space="preserve">
+    <value>Geçerli bir URL giriniz.</value>
+  </data>
+  <data name="Validation.Url.Required" xml:space="preserve">
+    <value>Url alanı boş olamaz.</value>
+  </data>
+  <data name="InvalidPaymentMethodType" xml:space="preserve">
+    <value>Geçersiz ödeme yöntemi türü</value>
+  </data>
+  <data name="InvalidCurrencyCode" xml:space="preserve">
+    <value>Para birimi kodu geçerli bir ISO kodu olmalıdır</value>
+  </data>
+  <data name="Validation.Required" xml:space="preserve">
+    <value>Bu alan zorunludur.</value>
+  </data>
+  <data name="Validation.InvalidEmail" xml:space="preserve">
+    <value>Geçersiz e-posta formatı.</value>
+  </data>
+  <data name="Validation.InvalidCurrency" xml:space="preserve">
+    <value>Geçersiz para birimi.</value>
+  </data>
+  <data name="Validation.InvalidStatus" xml:space="preserve">
+    <value>Geçersiz durum.</value>
+  </data>
+  <data name="Validation.InvalidPrice" xml:space="preserve">
+    <value>Fiyat sıfırdan büyük olmalıdır.</value>
+  </data>
+  <data name="Validation.InvalidGuid" xml:space="preserve">
+    <value>Geçersiz tanımlayıcı.</value>
+  </data>
+  <data name="Validation.InvalidDate" xml:space="preserve">
+    <value>Geçersiz tarih değeri.</value>
+  </data>
+  <data name="Validation.MaxLength" xml:space="preserve">
+    <value>Değer izin verilen uzunluğu aşıyor.</value>
+  </data>
+  <data name="ServiceMethodCannotBeNull" xml:space="preserve">
+    <value>Servis metodu boş olamaz</value>
+  </data>
+  <data name="ResponseWasNull" xml:space="preserve">
+    <value>Yanıt boş döndü</value>
+  </data>
+  <data name="ConnectionStringNotFound" xml:space="preserve">
+    <value>Bağlantı dizesi bulunamadı.</value>
+  </data>
+  <data name="UnsupportedDatabaseProvider" xml:space="preserve">
+    <value>Desteklenmeyen veritabanı sağlayıcısı.</value>
+  </data>
+  <data name="CommitWithoutTransaction" xml:space="preserve">
+    <value>Commit yapılamaz: Başlatılmış bir işlem yok.</value>
+  </data>
+  <data name="UnsupportedProvider" xml:space="preserve">
+    <value>Desteklenmeyen sağlayıcı.</value>
+  </data>
+  <data name="NotAValidationClass" xml:space="preserve">
+    <value>Bu bir doğrulama sınıfı değil.</value>
+  </data>
+  <data name="ValidatorNotResolved" xml:space="preserve">
+    <value>Tip {0} doğrulayıcı çözümlenemedi.</value>
+  </data>
+  <data name="CacheServiceNotResolved" xml:space="preserve">
+    <value>Önbellek servisi çözümlenemedi.</value>
+  </data>
+  <data name="CacheKeyPatternNotFound" xml:space="preserve">
+    <value>Önbellek anahtar deseni '{0}' bulunamadı.</value>
+  </data>
+  <data name="UserIdRequiredForUserResourcesPattern" xml:space="preserve">
+    <value>Kullanıcı kaynak deseni için UserId gereklidir.</value>
+  </data>
+  <data name="RoleIdRequiredForRoleCacheInvalidation" xml:space="preserve">
+    <value>Rol önbelleği temizliği için RoleId gereklidir.</value>
+  </data>
+  <data name="CacheKeyPrefixNotFound" xml:space="preserve">
+    <value>Önbellek anahtar öneki '{0}' bulunamadı.</value>
+  </data>
+  <data name="BaseSqlMustContainFrom" xml:space="preserve">
+    <value>Temel SQL ifadede FROM cümlesi bulunmalıdır.</value>
+  </data>
+  <data name="HttpContextAccessorNotResolved" xml:space="preserve">
+    <value>IHttpContextAccessor çözümlenemedi.</value>
+  </data>
+  <data name="PropertyNotFoundInRequest" xml:space="preserve">
+    <value>İstek içinde '{0}' özelliği bulunamadı.</value>
+  </data>
+  <data name="PropertyIsRequired" xml:space="preserve">
+    <value>'{0}' alanı zorunludur.</value>
+  </data>
+  <data name="UserIdNotActive" xml:space="preserve">
+    <value>Kullanıcı ID '{0}' aktif değil.</value>
+  </data>
+  <data name="PaymentMethodNotSupported" xml:space="preserve">
+    <value>{0} ödeme yöntemi desteklenmiyor.</value>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Bilinmeyen hata</value>
+  </data>
+  <data name="InvalidShipmentStatus" xml:space="preserve">
+    <value>Geçersiz gönderi durumu</value>
+  </data>
+  <data name="FullNameIsRequired" xml:space="preserve">
+    <value>Tam ad gereklidir</value>
+  </data>
+  <data name="FullNameMaxLength" xml:space="preserve">
+    <value>Tam ad 100 karakteri geçmemelidir</value>
+  </data>
+  <data name="InvalidPage" xml:space="preserve">
+    <value>Sayfa 0'dan büyük olmalıdır</value>
+  </data>
+  <data name="InvalidPageSize" xml:space="preserve">
+    <value>Sayfa boyutu 1 ile 100 arasında olmalıdır</value>
+  </data>
+  <data name="InvalidPostalCode" xml:space="preserve">
+    <value>Geçersiz posta kodu formatı</value>
+  </data>
+  <data name="RoleAssignmentFailed" xml:space="preserve">
+    <value>Rol ataması başarısız oldu.</value>
+  </data>
+  <data name="DbOperationFailed" xml:space="preserve">
+    <value>Veritabanı işlemi başarısız oldu.</value>
+  </data>
+  <data name="Claims.UserId.NotFound" xml:space="preserve">
+    <value>Kullanıcı ID claim'i bulunamadı.</value>
+  </data>
+  <data name="Claims.Email.NotFound" xml:space="preserve">
+    <value>E-posta claim'i bulunamadı.</value>
+  </data>
+  <data name="Claims.Schema.NotFound" xml:space="preserve">
+    <value>Şema claim'i bulunamadı.</value>
+  </data>
+  <data name="UserNotFoundWithEmail" xml:space="preserve">
+    <value>{0} e-postası ile kullanıcı bulunamadı.</value>
+  </data>
+  <data name="Brand.Created" xml:space="preserve">
+    <value>Marka oluşturuldu</value>
+  </data>
+  <data name="Brand.Updated" xml:space="preserve">
+    <value>Marka güncellendi</value>
+  </data>
+  <data name="Brand.Deleted" xml:space="preserve">
+    <value>Marka silindi</value>
+  </data>
+  <data name="Brand.HardDeleted" xml:space="preserve">
+    <value>Marka kalıcı olarak silindi</value>
+  </data>
+  <data name="Error.Brand.NotFound" xml:space="preserve">
+    <value>Marka bulunamadı</value>
+  </data>
+  <data name="Error.Brand.Code.Exists" xml:space="preserve">
+    <value>Marka kodu zaten mevcut</value>
+  </data>
+  <data name="Error.Brand.VendorCreateDisabled" xml:space="preserve">
+    <value>Satıcı marka oluşturma devre dışı</value>
+  </data>
+  <data name="Error.Brand.VendorUpdateForbidden" xml:space="preserve">
+    <value>Satıcı markayı güncelleyemez</value>
+  </data>
+  <data name="Error.Brand.VendorDeleteForbidden" xml:space="preserve">
+    <value>Satıcı markayı silemez</value>
+  </data>
+  <data name="Validation.Brand.Id.Required" xml:space="preserve">
+    <value>Marka kimliği gerekli</value>
+  </data>
+  <data name="Validation.Brand.Code.Required" xml:space="preserve">
+    <value>Kod gerekli</value>
+  </data>
+  <data name="Validation.Brand.Code.InvalidFormat" xml:space="preserve">
+    <value>Geçersiz marka kodu formatı</value>
+  </data>
+  <data name="Validation.Brand.Code.Length" xml:space="preserve">
+    <value>Marka kodu uzunluğu 2 ile 100 arasında olmalıdır</value>
+  </data>
+  <data name="Validation.Brand.Translations.Required" xml:space="preserve">
+    <value>Çeviriler gereklidir</value>
+  </data>
+  <data name="Validation.Brand.Translation.LanguageCode.Required" xml:space="preserve">
+    <value>Dil kodu gerekli</value>
+  </data>
+  <data name="Validation.Brand.Translation.Name.Required" xml:space="preserve">
+    <value>İsim gerekli</value>
+  </data>
+  <data name="Validation.Brand.Translation.Name.Length" xml:space="preserve">
+    <value>İsim uzunluğu 200'ü aşmamalıdır</value>
+  </data>
+  <data name="Validation.Brand.Status.Invalid" xml:space="preserve">
+    <value>Geçersiz marka durumu</value>
+  </data>
+  <data name="Users.EmailAlreadyExists" xml:space="preserve">
+    <value>Bu e-posta zaten kayıtlı.</value>
+  </data>
+  <data name="Referrals.Code.Invalid" xml:space="preserve">
+    <value>Geçersiz referans kodu.</value>
+  </data>
+  <data name="Referrals.Code.NotFound" xml:space="preserve">
+    <value>Referans veren kullanıcı bulunamadı.</value>
+  </data>
+  <data name="Referrals.SelfReferral.NotAllowed" xml:space="preserve">
+    <value>Kendi kendine referans verilemez.</value>
+  </data>
+</root>

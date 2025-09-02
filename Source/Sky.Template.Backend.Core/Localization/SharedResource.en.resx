@@ -1,0 +1,493 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="DatabaseErrorDefault" xml:space="preserve">
+    <value>A database error occurred</value>
+  </data>
+  <data name="DefaultAddressAlreadyExistsForBuyer" xml:space="preserve">
+    <value>Default address already exists for this buyer</value>
+  </data>
+  <data name="DescriptionMaxLength" xml:space="preserve">
+    <value>Description must not exceed 500 characters</value>
+  </data>
+  <data name="EitherBuyerIdOrOrderIdMustBeProvided" xml:space="preserve">
+    <value>Either buyer ID or order ID must be provided</value>
+  </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>Email is invalid</value>
+  </data>
+  <data name="EmailIsRequired" xml:space="preserve">
+    <value>Email is required</value>
+  </data>
+  <data name="Erp.ConfigNotFound" xml:space="preserve">
+    <value>ERP configuration not found.</value>
+  </data>
+  <data name="FirstNameCannotBeEmpty" xml:space="preserve">
+    <value>First name cannot be empty</value>
+  </data>
+  <data name="FirstNameIsRequired" xml:space="preserve">
+    <value>First name is required</value>
+  </data>
+  <data name="FirstNameMaxLength" xml:space="preserve">
+    <value>First name must not exceed 50 characters</value>
+  </data>
+  <data name="ForbiddenAccess" xml:space="preserve">
+    <value>Forbidden Access</value>
+  </data>
+  <data name="InternalServerError" xml:space="preserve">
+    <value>Internal server error</value>
+  </data>
+  <data name="InvalidCredentials" xml:space="preserve">
+    <value>Invalid credentials</value>
+  </data>
+  <data name="InvalidEmailFormat" xml:space="preserve">
+    <value>Invalid email format</value>
+  </data>
+  <data name="InvalidPaymentStatus" xml:space="preserve">
+    <value>Invalid payment status</value>
+  </data>
+  <data name="InvalidPaymentType" xml:space="preserve">
+    <value>Invalid payment type</value>
+  </data>
+  <data name="InvalidUserId" xml:space="preserve">
+    <value>Invalid user ID</value>
+  </data>
+  <data name="LastNameCannotBeEmpty" xml:space="preserve">
+    <value>Last name cannot be empty</value>
+  </data>
+  <data name="LastNameIsRequired" xml:space="preserve">
+    <value>Last name is required</value>
+  </data>
+  <data name="LastNameMaxLength" xml:space="preserve">
+    <value>Last name must not exceed 50 characters</value>
+  </data>
+  <data name="LoginSuccessful" xml:space="preserve">
+    <value>Login successful</value>
+  </data>
+  <data name="LogoutSuccessful" xml:space="preserve">
+    <value>Logout Successful</value>
+  </data>
+  <data name="OrderDirectionPropNotFound" xml:space="preserve">
+    <value>Sorting direction can only be ASC or DESC.</value>
+  </data>
+  <data name="OrderNotFound" xml:space="preserve">
+    <value>Order not found</value>
+  </data>
+  <data name="PasswordIsRequired" xml:space="preserve">
+    <value>Password is required</value>
+  </data>
+  <data name="PasswordLowercaseRequired" xml:space="preserve">
+    <value>Password must contain at least one lowercase letter</value>
+  </data>
+  <data name="PasswordMinLength" xml:space="preserve">
+    <value>Password must be at least 8 characters</value>
+  </data>
+  <data name="PasswordNumberRequired" xml:space="preserve">
+    <value>Password must contain at least one number</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>Password is required</value>
+  </data>
+  <data name="PasswordSpecialCharRequired" xml:space="preserve">
+    <value>Password must contain at least one special character</value>
+  </data>
+  <data name="PasswordUppercaseRequired" xml:space="preserve">
+    <value>Password must contain at least one uppercase letter</value>
+  </data>
+  <data name="PermissionIdCannotBeEmpty" xml:space="preserve">
+    <value>Permission ID cannot be empty</value>
+  </data>
+  <data name="PermissionIdIsRequired" xml:space="preserve">
+    <value>Permission ID is required</value>
+  </data>
+  <data name="PermissionNameIsRequired" xml:space="preserve">
+    <value>Permission name is required</value>
+  </data>
+  <data name="PermissionNameMaxLength" xml:space="preserve">
+    <value>Permission name must not exceed 50 characters</value>
+  </data>
+  <data name="PhoneIsRequired" xml:space="preserve">
+    <value>Phone number is required</value>
+  </data>
+  <data name="RefreshSuccessful" xml:space="preserve">
+    <value>Refresh Successful</value>
+  </data>
+  <data name="RefreshTokenInvalid" xml:space="preserve">
+    <value>Refresh Token Invalid</value>
+  </data>
+  <data name="RefreshTokenNotFound" xml:space="preserve">
+    <value>Refresh token not found</value>
+  </data>
+  <data name="RegistrationFailed" xml:space="preserve">
+    <value>Registration failed</value>
+  </data>
+  <data name="RoleIdCannotBeEmpty" xml:space="preserve">
+    <value>RoleId Can not Be Empty</value>
+  </data>
+  <data name="RoleIdIsRequired" xml:space="preserve">
+    <value>Role ID is required</value>
+  </data>
+  <data name="RoleNameIsRequired" xml:space="preserve">
+    <value>Role name is required</value>
+  </data>
+  <data name="RoleNameMaxLength" xml:space="preserve">
+    <value>Role name must not exceed 50 characters</value>
+  </data>
+  <data name="RoleNotFound" xml:space="preserve">
+    <value>Role is Not Found</value>
+  </data>
+  <data name="RoleNotFoundWithId" xml:space="preserve">
+    <value>Role with ID {0} not found.</value>
+  </data>
+  <data name="StatusCannotBeEmpty" xml:space="preserve">
+    <value>Status cannot be empty</value>
+  </data>
+  <data name="StatusIsRequired" xml:space="preserve">
+    <value>Status is required</value>
+  </data>
+  <data name="StatusMustBeActiveOrInactive" xml:space="preserve">
+    <value>Status must be Active or Inactive</value>
+  </data>
+  <data name="UnauthorizedAccess" xml:space="preserve">
+    <value>Unauthorized access</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>An unexpected error occurred</value>
+  </data>
+  <data name="UserAlreadyExists" xml:space="preserve">
+    <value>A user with this email already exists</value>
+  </data>
+  <data name="UserIdCannotBeEmpty" xml:space="preserve">
+    <value>UserId Can not Be Empty</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>User not found.</value>
+    <comment>Email not matched in database</comment>
+  </data>
+  <data name="UserNotFoundWithEmails" xml:space="preserve">
+    <value>User with EMAIL : {0} not found.</value>
+  </data>
+  <data name="UserNotFoundWithId" xml:space="preserve">
+    <value>User with ID {0} not found.</value>
+  </data>
+  <data name="UsernameRequired" xml:space="preserve">
+    <value>UserName is required</value>
+  </data>
+  <data name="Validation.AuthToken.RequiredIfAuthenticated" xml:space="preserve">
+    <value>AuthToken is required when authentication is enabled.</value>
+  </data>
+  <data name="Validation.ContentType.Required" xml:space="preserve">
+    <value>Content-Type cannot be empty.</value>
+  </data>
+  <data name="Validation.ContentType.Unsupported" xml:space="preserve">
+    <value>Only 'application/json' is supported.</value>
+  </data>
+  <data name="Validation.Method.Required" xml:space="preserve">
+    <value>HTTP method must be specified.</value>
+  </data>
+  <data name="Validation.Url.Invalid" xml:space="preserve">
+    <value>Please enter a valid URL.</value>
+  </data>
+  <data name="Validation.Url.Required" xml:space="preserve">
+    <value>URL field cannot be empty.</value>
+  </data>
+  <data name="InvalidPaymentMethodType" xml:space="preserve">
+    <value>Invalid payment method type</value>
+  </data>
+  <data name="InvalidCurrencyCode" xml:space="preserve">
+    <value>Currency code must be a valid ISO code</value>
+  </data>
+  <data name="Validation.Required" xml:space="preserve">
+    <value>This field is required.</value>
+  </data>
+  <data name="Validation.InvalidEmail" xml:space="preserve">
+    <value>Invalid email format.</value>
+  </data>
+  <data name="Validation.InvalidCurrency" xml:space="preserve">
+    <value>Invalid currency code.</value>
+  </data>
+  <data name="Validation.InvalidStatus" xml:space="preserve">
+    <value>Invalid status value.</value>
+  </data>
+  <data name="Validation.InvalidPrice" xml:space="preserve">
+    <value>Price must be greater than zero.</value>
+  </data>
+  <data name="Validation.InvalidGuid" xml:space="preserve">
+    <value>Invalid identifier.</value>
+  </data>
+  <data name="Validation.InvalidDate" xml:space="preserve">
+    <value>Invalid date value.</value>
+  </data>
+  <data name="Validation.MaxLength" xml:space="preserve">
+    <value>Value exceeds maximum length.</value>
+  </data>
+  <data name="ServiceMethodCannotBeNull" xml:space="preserve">
+    <value>Service method cannot be null</value>
+  </data>
+  <data name="ResponseWasNull" xml:space="preserve">
+    <value>Response was null</value>
+  </data>
+  <data name="ConnectionStringNotFound" xml:space="preserve">
+    <value>Connection string not found.</value>
+  </data>
+  <data name="UnsupportedDatabaseProvider" xml:space="preserve">
+    <value>Unsupported database provider.</value>
+  </data>
+  <data name="CommitWithoutTransaction" xml:space="preserve">
+    <value>Cannot commit: No transaction has been started.</value>
+  </data>
+  <data name="UnsupportedProvider" xml:space="preserve">
+    <value>Unsupported provider.</value>
+  </data>
+  <data name="NotAValidationClass" xml:space="preserve">
+    <value>Type is not a validation class.</value>
+  </data>
+  <data name="ValidatorNotResolved" xml:space="preserve">
+    <value>Validator of type {0} could not be resolved.</value>
+  </data>
+  <data name="CacheServiceNotResolved" xml:space="preserve">
+    <value>Cache service could not be resolved.</value>
+  </data>
+  <data name="CacheKeyPatternNotFound" xml:space="preserve">
+    <value>Cache key pattern '{0}' not found.</value>
+  </data>
+  <data name="UserIdRequiredForUserResourcesPattern" xml:space="preserve">
+    <value>UserId is required for user resources pattern.</value>
+  </data>
+  <data name="RoleIdRequiredForRoleCacheInvalidation" xml:space="preserve">
+    <value>RoleId is required for role cache invalidation.</value>
+  </data>
+  <data name="CacheKeyPrefixNotFound" xml:space="preserve">
+    <value>Cache key prefix '{0}' not found.</value>
+  </data>
+  <data name="BaseSqlMustContainFrom" xml:space="preserve">
+    <value>Base SQL must contain a FROM clause.</value>
+  </data>
+  <data name="HttpContextAccessorNotResolved" xml:space="preserve">
+    <value>IHttpContextAccessor could not be resolved.</value>
+  </data>
+  <data name="PropertyNotFoundInRequest" xml:space="preserve">
+    <value>Property '{0}' not found in request.</value>
+  </data>
+  <data name="PropertyIsRequired" xml:space="preserve">
+    <value>Property '{0}' is required.</value>
+  </data>
+  <data name="UserIdNotActive" xml:space="preserve">
+    <value>User ID '{0}' is not active.</value>
+  </data>
+  <data name="PaymentMethodNotSupported" xml:space="preserve">
+    <value>Payment method {0} is not supported.</value>
+  </data>
+  <data name="UnknownError" xml:space="preserve">
+    <value>Unknown error</value>
+  </data>
+  <data name="InvalidShipmentStatus" xml:space="preserve">
+    <value>Invalid shipment status</value>
+  </data>
+  <data name="FullNameIsRequired" xml:space="preserve">
+    <value>Full name is required</value>
+  </data>
+  <data name="FullNameMaxLength" xml:space="preserve">
+    <value>Full name must not exceed 100 characters</value>
+  </data>
+  <data name="InvalidPage" xml:space="preserve">
+    <value>Page must be greater than zero</value>
+  </data>
+  <data name="InvalidPageSize" xml:space="preserve">
+    <value>Page size must be between 1 and 100</value>
+  </data>
+  <data name="InvalidPostalCode" xml:space="preserve">
+    <value>Invalid postal code format</value>
+  </data>
+  <data name="RoleAssignmentFailed" xml:space="preserve">
+    <value>Role assignment failed.</value>
+  </data>
+  <data name="DbOperationFailed" xml:space="preserve">
+    <value>Database operation failed.</value>
+  </data>
+  <data name="Claims.UserId.NotFound" xml:space="preserve">
+    <value>User ID claim not found.</value>
+  </data>
+  <data name="Claims.Email.NotFound" xml:space="preserve">
+    <value>Email claim not found.</value>
+  </data>
+  <data name="Claims.Schema.NotFound" xml:space="preserve">
+    <value>Schema claim not found.</value>
+  </data>
+  <data name="UserNotFoundWithEmail" xml:space="preserve">
+    <value>User with email {0} not found.</value>
+  </data>
+  <data name="Brand.Created" xml:space="preserve">
+    <value>Brand created</value>
+  </data>
+  <data name="Brand.Updated" xml:space="preserve">
+    <value>Brand updated</value>
+  </data>
+  <data name="Brand.Deleted" xml:space="preserve">
+    <value>Brand deleted</value>
+  </data>
+  <data name="Brand.HardDeleted" xml:space="preserve">
+    <value>Brand hard deleted</value>
+  </data>
+  <data name="Error.Brand.NotFound" xml:space="preserve">
+    <value>Brand not found</value>
+  </data>
+  <data name="Error.Brand.Code.Exists" xml:space="preserve">
+    <value>Brand code already exists</value>
+  </data>
+  <data name="Error.Brand.VendorCreateDisabled" xml:space="preserve">
+    <value>Vendor brand creation is disabled</value>
+  </data>
+  <data name="Error.Brand.VendorUpdateForbidden" xml:space="preserve">
+    <value>Vendor brand update is forbidden</value>
+  </data>
+  <data name="Error.Brand.VendorDeleteForbidden" xml:space="preserve">
+    <value>Vendor brand delete is forbidden</value>
+  </data>
+  <data name="Validation.Brand.Id.Required" xml:space="preserve">
+    <value>Brand id is required</value>
+  </data>
+  <data name="Validation.Brand.Code.Required" xml:space="preserve">
+    <value>Code is required</value>
+  </data>
+  <data name="Validation.Brand.Code.InvalidFormat" xml:space="preserve">
+    <value>Invalid brand code format</value>
+  </data>
+  <data name="Validation.Brand.Code.Length" xml:space="preserve">
+    <value>Brand code length must be between 2 and 100</value>
+  </data>
+  <data name="Validation.Brand.Translations.Required" xml:space="preserve">
+    <value>Translations are required</value>
+  </data>
+  <data name="Validation.Brand.Translation.LanguageCode.Required" xml:space="preserve">
+    <value>Language code is required</value>
+  </data>
+  <data name="Validation.Brand.Translation.Name.Required" xml:space="preserve">
+    <value>Name is required</value>
+  </data>
+  <data name="Validation.Brand.Translation.Name.Length" xml:space="preserve">
+    <value>Name length must not exceed 200</value>
+  </data>
+  <data name="Validation.Brand.Status.Invalid" xml:space="preserve">
+    <value>Invalid brand status</value>
+  </data>
+  <data name="Users.EmailAlreadyExists" xml:space="preserve">
+    <value>This email is already registered.</value>
+  </data>
+  <data name="Referrals.Code.Invalid" xml:space="preserve">
+    <value>Invalid referral code.</value>
+  </data>
+  <data name="Referrals.Code.NotFound" xml:space="preserve">
+    <value>Referrer user not found.</value>
+  </data>
+  <data name="Referrals.SelfReferral.NotAllowed" xml:space="preserve">
+    <value>Self-referral is not allowed.</value>
+  </data>
+</root>

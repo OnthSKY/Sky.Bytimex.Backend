@@ -1,0 +1,68 @@
+## .NET build artifacts
+bin/
+obj/
+
+## Rider / VS Code / VS for Mac
+.idea/
+.vscode/
+.vs/
+*.user
+*.suo
+
+## ASP.NET specific
+wwwroot/dist/
+wwwroot/node_modules/
+
+## NuGet packages
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Paketlerin otomatik restore edilmesi destekleniyorsa:
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Logs
+*.log
+logs/
+log/
+
+## Publish outputs
+publish/
+out/
+
+## User-specific files
+*.user
+*.userosscache
+*.sln.docstates
+
+## OS generated
+.DS_Store
+Thumbs.db
+
+## Optional: Test results
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+
+## Global tool restores
+.dotnet_tool/
+
+## dotenv or config (isteğe bağlı)
+*.env
+appsettings.*.local.json
+
+## ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+## Backup & temp files
+*~
+*.bak
+*.tmp
+*.temp
+/Builds
+Source/Sky.Template.Backend.WebAPI/appsettings.Development.json

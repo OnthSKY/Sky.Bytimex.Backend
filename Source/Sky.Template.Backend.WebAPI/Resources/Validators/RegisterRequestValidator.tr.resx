@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="EmailIsRequired" xml:space="preserve">
+    <value>E-posta adresi gereklidir</value>
+  </data>
+  <data name="InvalidEmailFormat" xml:space="preserve">
+    <value>Geçersiz e-posta formatı</value>
+  </data>
+  <data name="PhoneIsRequired" xml:space="preserve">
+    <value>Telefon numarası gereklidir</value>
+  </data>
+  <data name="InvalidPhoneFormat" xml:space="preserve">
+    <value>Geçersiz telefon formatı. Format: +[ülke kodu][10 hane]</value>
+  </data>
+  <data name="PasswordIsRequired" xml:space="preserve">
+    <value>Şifre gereklidir</value>
+  </data>
+  <data name="PasswordMinLength" xml:space="preserve">
+    <value>Şifre en az 8 karakter olmalıdır</value>
+  </data>
+  <data name="PasswordUppercaseRequired" xml:space="preserve">
+    <value>Şifre en az bir büyük harf içermelidir</value>
+  </data>
+  <data name="PasswordLowercaseRequired" xml:space="preserve">
+    <value>Şifre en az bir küçük harf içermelidir</value>
+  </data>
+  <data name="PasswordNumberRequired" xml:space="preserve">
+    <value>Şifre en az bir rakam içermelidir</value>
+  </data>
+  <data name="PasswordSpecialCharRequired" xml:space="preserve">
+    <value>Şifre en az bir özel karakter içermelidir</value>
+  </data>
+  <data name="FirstNameIsRequired" xml:space="preserve">
+    <value>Ad gereklidir</value>
+  </data>
+  <data name="FirstNameMaxLength" xml:space="preserve">
+    <value>Ad en fazla 50 karakter olabilir</value>
+  </data>
+  <data name="LastNameIsRequired" xml:space="preserve">
+    <value>Soyad gereklidir</value>
+  </data>
+  <data name="LastNameMaxLength" xml:space="preserve">
+    <value>Soyad en fazla 50 karakter olabilir</value>
+  </data>
+</root> 

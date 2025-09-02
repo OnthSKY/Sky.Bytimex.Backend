@@ -1,0 +1,16 @@
+using FluentValidation;
+using Sky.Template.Backend.Contract.Requests.OrderDetails;
+
+namespace Sky.Template.Backend.Application.Validators.FluentValidation.OrderDetails;
+
+public class CreateOrderDetailRequestValidator : AbstractValidator<CreateOrderDetailRequest>
+{
+    public CreateOrderDetailRequestValidator()
+    {
+        RuleFor(x => x.OrderId).NotEmpty();
+        RuleFor(x => x.ProductId).NotEmpty();
+        RuleFor(x => x.Quantity).GreaterThan(0);
+        RuleFor(x => x.UnitPrice).GreaterThan(0);
+    }
+}
+

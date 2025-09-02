@@ -1,0 +1,185 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35818.85
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItem", "SolutionItem", "{369FFD8F-6761-4B40-912C-EA6CD9EF66D4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{86C876F1-0A4D-4C4F-B2D9-D75636490013}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{FEBF4259-673F-4F44-B3D5-5AB67E482B8A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docs", "Docs", "{7EF6A1F6-E66B-42A9-BBA6-438EBDA93A24}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\bus_system_schema.md = Docs\bus_system_schema.md
+		Docs\database-connection.md = Docs\database-connection.md
+		Docs\grid-builder-standards.md = Docs\grid-builder-standards.md
+		Docs\module-overview.md = Docs\module-overview.md
+		Docs\README.md = Docs\README.md
+		Docs\versioning-standards.md = Docs\versioning-standards.md
+		Docs\_index.md = Docs\_index.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sky.Template.Backend.WebAPI", "Source\Sky.Template.Backend.WebAPI\Sky.Template.Backend.WebAPI.csproj", "{7599373E-CA22-6BAD-4811-76C387162051}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sky.Template.Backend.Infrastructure", "Source\Sky.Template.Backend.Infrastructure\Sky.Template.Backend.Infrastructure.csproj", "{75DCF177-102F-FAF6-444B-C0E862763F2F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sky.Template.Backend.Core", "Source\Sky.Template.Backend.Core\Sky.Template.Backend.Core.csproj", "{13D7131C-685F-B748-4CD1-899100649D2E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sky.Template.Backend.Contract", "Source\Sky.Template.Backend.Contract\Sky.Template.Backend.Contract.csproj", "{266F49EC-0E19-77B2-DDCE-1BC7BCD2D2B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sky.Template.Backend.Application", "Source\Sky.Template.Backend.Application\Sky.Template.Backend.Application.csproj", "{0CEB10FA-43B5-86EB-649F-F47677E6CF25}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sky.Template.Backend.UnitTests", "Test\Sky.Template.Backend.UnitTests\Sky.Template.Backend.UnitTests.csproj", "{4B321C04-BFB1-4FEA-98DD-64CD29764211}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "architecture", "architecture", "{4CF5DDEE-F3E1-42C6-A285-9633B888654E}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\architecture\backend-architecture.md = Docs\architecture\backend-architecture.md
+		Docs\architecture\frontend-architecture.md = Docs\architecture\frontend-architecture.md
+		Docs\architecture\overview.md = Docs\architecture\overview.md
+		Docs\architecture\_index.md = Docs\architecture\_index.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "decisions", "decisions", "{3E83AB50-0590-4EA5-8DC7-B0AFC1280AA0}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\architecture\decisions\overview.md = Docs\architecture\decisions\overview.md
+		Docs\architecture\decisions\_index.md = Docs\architecture\decisions\_index.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{8279A798-2596-44E1-9E5B-B0DBED0DDF29}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\assets\.gitkeep = Docs\assets\.gitkeep
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{89185498-FDE4-465E-ADAF-E4EBF91CD60B}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\backend\caching.md = Docs\backend\caching.md
+		Docs\backend\conventions.md = Docs\backend\conventions.md
+		Docs\backend\getting-started.md = Docs\backend\getting-started.md
+		Docs\backend\i18n.md = Docs\backend\i18n.md
+		Docs\backend\security.md = Docs\backend\security.md
+		Docs\backend\troubleshooting.md = Docs\backend\troubleshooting.md
+		Docs\backend\_index.md = Docs\backend\_index.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "api", "api", "{F4D09062-1439-496A-AC65-3BD79262DAEF}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\backend\api\kyc.md = Docs\backend\api\kyc.md
+		Docs\backend\api\orders.md = Docs\backend\api\orders.md
+		Docs\backend\api\products.md = Docs\backend\api\products.md
+		Docs\backend\api\roles.md = Docs\backend\api\roles.md
+		Docs\backend\api\users.md = Docs\backend\api\users.md
+		Docs\backend\api\vendor.md = Docs\backend\api\vendor.md
+		Docs\backend\api\_index.md = Docs\backend\api\_index.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "modules", "modules", "{6E5F5B88-24C6-4EF1-BB5C-2F8509D857EC}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\backend\modules\kyc.md = Docs\backend\modules\kyc.md
+		Docs\backend\modules\orders.md = Docs\backend\modules\orders.md
+		Docs\backend\modules\products.md = Docs\backend\modules\products.md
+		Docs\backend\modules\roles.md = Docs\backend\modules\roles.md
+		Docs\backend\modules\users.md = Docs\backend\modules\users.md
+		Docs\backend\modules\vendor.md = Docs\backend\modules\vendor.md
+		Docs\backend\modules\_index.md = Docs\backend\modules\_index.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "frontend", "frontend", "{D6F7EBA2-BB64-4740-89D6-ECFDE0CC5103}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\frontend\api-client.md = Docs\frontend\api-client.md
+		Docs\frontend\conventions.md = Docs\frontend\conventions.md
+		Docs\frontend\getting-started.md = Docs\frontend\getting-started.md
+		Docs\frontend\i18n.md = Docs\frontend\i18n.md
+		Docs\frontend\state-management.md = Docs\frontend\state-management.md
+		Docs\frontend\_index.md = Docs\frontend\_index.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "modules", "modules", "{7D81028D-5AC3-4132-9512-A2DE4938DEA2}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\frontend\modules\kyc.md = Docs\frontend\modules\kyc.md
+		Docs\frontend\modules\orders.md = Docs\frontend\modules\orders.md
+		Docs\frontend\modules\products.md = Docs\frontend\modules\products.md
+		Docs\frontend\modules\roles.md = Docs\frontend\modules\roles.md
+		Docs\frontend\modules\users.md = Docs\frontend\modules\users.md
+		Docs\frontend\modules\vendor.md = Docs\frontend\modules\vendor.md
+		Docs\frontend\modules\_index.md = Docs\frontend\modules\_index.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ops", "ops", "{D6173E84-04DA-453A-90FE-8A593F53654A}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\ops\ci-cd.md = Docs\ops\ci-cd.md
+		Docs\ops\environment.md = Docs\ops\environment.md
+		Docs\ops\runbooks.md = Docs\ops\runbooks.md
+		Docs\ops\_index.md = Docs\ops\_index.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "style", "style", "{39F59F48-1C4B-47A6-910E-274B58D08275}"
+	ProjectSection(SolutionItems) = preProject
+		Docs\style\changelog.md = Docs\style\changelog.md
+		Docs\style\writing-guide.md = Docs\style\writing-guide.md
+		Docs\style\_index.md = Docs\style\_index.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{467E9468-7590-48F3-89DD-4718791E03EB}"
+	ProjectSection(SolutionItems) = preProject
+		api.md = api.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7599373E-CA22-6BAD-4811-76C387162051}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7599373E-CA22-6BAD-4811-76C387162051}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7599373E-CA22-6BAD-4811-76C387162051}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7599373E-CA22-6BAD-4811-76C387162051}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75DCF177-102F-FAF6-444B-C0E862763F2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75DCF177-102F-FAF6-444B-C0E862763F2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75DCF177-102F-FAF6-444B-C0E862763F2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75DCF177-102F-FAF6-444B-C0E862763F2F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13D7131C-685F-B748-4CD1-899100649D2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13D7131C-685F-B748-4CD1-899100649D2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13D7131C-685F-B748-4CD1-899100649D2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13D7131C-685F-B748-4CD1-899100649D2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{266F49EC-0E19-77B2-DDCE-1BC7BCD2D2B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{266F49EC-0E19-77B2-DDCE-1BC7BCD2D2B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{266F49EC-0E19-77B2-DDCE-1BC7BCD2D2B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{266F49EC-0E19-77B2-DDCE-1BC7BCD2D2B8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CEB10FA-43B5-86EB-649F-F47677E6CF25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CEB10FA-43B5-86EB-649F-F47677E6CF25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CEB10FA-43B5-86EB-649F-F47677E6CF25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CEB10FA-43B5-86EB-649F-F47677E6CF25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B321C04-BFB1-4FEA-98DD-64CD29764211}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B321C04-BFB1-4FEA-98DD-64CD29764211}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B321C04-BFB1-4FEA-98DD-64CD29764211}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B321C04-BFB1-4FEA-98DD-64CD29764211}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7599373E-CA22-6BAD-4811-76C387162051} = {86C876F1-0A4D-4C4F-B2D9-D75636490013}
+		{75DCF177-102F-FAF6-444B-C0E862763F2F} = {86C876F1-0A4D-4C4F-B2D9-D75636490013}
+		{13D7131C-685F-B748-4CD1-899100649D2E} = {86C876F1-0A4D-4C4F-B2D9-D75636490013}
+		{266F49EC-0E19-77B2-DDCE-1BC7BCD2D2B8} = {86C876F1-0A4D-4C4F-B2D9-D75636490013}
+		{0CEB10FA-43B5-86EB-649F-F47677E6CF25} = {86C876F1-0A4D-4C4F-B2D9-D75636490013}
+		{4B321C04-BFB1-4FEA-98DD-64CD29764211} = {FEBF4259-673F-4F44-B3D5-5AB67E482B8A}
+		{4CF5DDEE-F3E1-42C6-A285-9633B888654E} = {7EF6A1F6-E66B-42A9-BBA6-438EBDA93A24}
+		{3E83AB50-0590-4EA5-8DC7-B0AFC1280AA0} = {4CF5DDEE-F3E1-42C6-A285-9633B888654E}
+		{8279A798-2596-44E1-9E5B-B0DBED0DDF29} = {7EF6A1F6-E66B-42A9-BBA6-438EBDA93A24}
+		{89185498-FDE4-465E-ADAF-E4EBF91CD60B} = {7EF6A1F6-E66B-42A9-BBA6-438EBDA93A24}
+		{F4D09062-1439-496A-AC65-3BD79262DAEF} = {89185498-FDE4-465E-ADAF-E4EBF91CD60B}
+		{6E5F5B88-24C6-4EF1-BB5C-2F8509D857EC} = {89185498-FDE4-465E-ADAF-E4EBF91CD60B}
+		{D6F7EBA2-BB64-4740-89D6-ECFDE0CC5103} = {7EF6A1F6-E66B-42A9-BBA6-438EBDA93A24}
+		{7D81028D-5AC3-4132-9512-A2DE4938DEA2} = {D6F7EBA2-BB64-4740-89D6-ECFDE0CC5103}
+		{D6173E84-04DA-453A-90FE-8A593F53654A} = {7EF6A1F6-E66B-42A9-BBA6-438EBDA93A24}
+		{39F59F48-1C4B-47A6-910E-274B58D08275} = {7EF6A1F6-E66B-42A9-BBA6-438EBDA93A24}
+		{467E9468-7590-48F3-89DD-4718791E03EB} = {7EF6A1F6-E66B-42A9-BBA6-438EBDA93A24}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9DCD6E54-D844-4162-8004-2D7AEA0DDA29}
+	EndGlobalSection
+EndGlobal

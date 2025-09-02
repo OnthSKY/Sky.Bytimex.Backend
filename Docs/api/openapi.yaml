@@ -1,0 +1,377 @@
+openapi: 3.1.0
+info:
+  title: Sky Template API
+  version: 1.0.0
+  description: Generated from docs/source/api.md and controllers
+  x-generated-from:
+    - docs/source/api.md
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: .AspNetCore.Cookies
+  schemas:
+    AuthRequest:
+      type: object
+      description: TODO
+    AuthResponse:
+      type: object
+      description: TODO
+    ProductFilterRequest:
+      type: object
+      description: TODO
+    ProductListResponse:
+      type: object
+      description: TODO
+    ProductCategoryListResponse:
+      type: object
+      description: TODO
+    BrandFilterRequest:
+      type: object
+      description: TODO
+    BrandListResponse:
+      type: object
+      description: TODO
+    OrderFilterRequest:
+      type: object
+      description: TODO
+    OrderListResponse:
+      type: object
+      description: TODO
+    PaymentFilterRequest:
+      type: object
+      description: TODO
+    PaymentListResponse:
+      type: object
+      description: TODO
+    ShipmentFilterRequest:
+      type: object
+      description: TODO
+    ShipmentListResponse:
+      type: object
+      description: TODO
+    RoleFilterRequest:
+      type: object
+      description: TODO
+    RoleListResponse:
+      type: object
+      description: TODO
+    PermissionFilterRequest:
+      type: object
+      description: TODO
+    PermissionListResponse:
+      type: object
+      description: TODO
+    ReturnFilterRequest:
+      type: object
+      description: TODO
+    ReturnListResponse:
+      type: object
+      description: TODO
+    InvoiceFilterRequest:
+      type: object
+      description: TODO
+    InvoiceListResponse:
+      type: object
+      description: TODO
+    KycApprovalRequest:
+      type: object
+      description: TODO
+    KycStatusResponse:
+      type: object
+      description: TODO
+    FileUploadListResponse:
+      type: object
+      description: TODO
+    CreateProductRequest:
+      type: object
+      description: TODO
+    ProductDetailResponse:
+      type: object
+      description: TODO
+paths:
+  /api/auth/sign-in:
+    post:
+      tags: [Shared]
+      summary: Sign in
+      description: User login
+      operationId: SharedAuthController_post_sign_in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+  /api/admin/products/v1:
+    get:
+      tags: [Admin]
+      summary: List products
+      description: List products
+      operationId: AdminProductController_get_products
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: filter
+          schema:
+            $ref: '#/components/schemas/ProductFilterRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
+  /api/admin/product-categories/v1:
+    get:
+      tags: [Admin]
+      summary: List product categories
+      description: List product categories
+      operationId: AdminProductCategoryController_get_product_categories
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductCategoryListResponse'
+  /api/admin/brands/v2:
+    get:
+      tags: [Admin]
+      summary: List brands
+      description: List brands
+      operationId: AdminBrandController_get_brands_v2
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: filter
+          schema:
+            $ref: '#/components/schemas/BrandFilterRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BrandListResponse'
+  /api/admin/orders/v2:
+    get:
+      tags: [Admin]
+      summary: List orders
+      description: List orders
+      operationId: AdminOrderController_get_orders_v2
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: filter
+          schema:
+            $ref: '#/components/schemas/OrderFilterRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderListResponse'
+  /api/admin/payments/v1:
+    get:
+      tags: [Admin]
+      summary: List payments
+      description: List payments
+      operationId: AdminPaymentController_get_payments
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: filter
+          schema:
+            $ref: '#/components/schemas/PaymentFilterRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentListResponse'
+  /api/admin/shipments/v1:
+    get:
+      tags: [Admin]
+      summary: List shipments
+      description: List shipments
+      operationId: AdminShipmentController_get_shipments
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: filter
+          schema:
+            $ref: '#/components/schemas/ShipmentFilterRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShipmentListResponse'
+  /api/admin/roles/v1/all:
+    get:
+      tags: [Admin]
+      summary: List roles
+      description: List roles
+      operationId: AdminRoleController_get_roles_all
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: filter
+          schema:
+            $ref: '#/components/schemas/RoleFilterRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RoleListResponse'
+  /api/admin/permissions/v1/all:
+    get:
+      tags: [Admin]
+      summary: List permissions
+      description: List permissions
+      operationId: AdminPermissionController_get_permissions_all
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: filter
+          schema:
+            $ref: '#/components/schemas/PermissionFilterRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PermissionListResponse'
+  /api/admin/returns/v1:
+    get:
+      tags: [Admin]
+      summary: List returns
+      description: List returns
+      operationId: AdminReturnController_get_returns
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: filter
+          schema:
+            $ref: '#/components/schemas/ReturnFilterRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReturnListResponse'
+  /api/admin/invoices/v1:
+    get:
+      tags: [Admin]
+      summary: List invoices
+      description: List invoices
+      operationId: AdminInvoiceController_get_invoices
+      security:
+        - cookieAuth: []
+      parameters:
+        - in: query
+          name: filter
+          schema:
+            $ref: '#/components/schemas/InvoiceFilterRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceListResponse'
+  /api/admin/kyc/approve/v1:
+    post:
+      tags: [Admin]
+      summary: Approve KYC
+      description: Approve KYC
+      operationId: AdminKycController_post_approve
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/KycApprovalRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KycStatusResponse'
+  /api/file-uploads/v1:
+    get:
+      tags: [System]
+      summary: List file uploads
+      description: List file uploads
+      operationId: SystemFileUploadController_get_file_uploads
+      security:
+        - cookieAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FileUploadListResponse'
+  /api/vendor/products/v1:
+    post:
+      tags: [Vendor]
+      summary: Create product
+      description: Create product
+      operationId: VendorProductController_post_products
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetailResponse'
+  /api/user/products/v1:
+    get:
+      tags: [Storefront]
+      summary: List products
+      description: List products for storefront
+      operationId: UserProductController_get_products
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductListResponse'
