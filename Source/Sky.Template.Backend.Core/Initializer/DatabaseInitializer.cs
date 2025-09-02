@@ -513,9 +513,19 @@ public static class DatabaseInitializer
                       PRIMARY KEY (variant_id, attribute_id, value_text)
                     );
 
-                    ALTER TABLE sys.users
-                      ADD CONSTRAINT chk_users_no_self_referral
-                      CHECK (referred_by IS NULL OR referred_by <> id);
+                  DO $$
+                    BEGIN
+                      IF NOT EXISTS (
+                        SELECT 1
+                        FROM pg_constraint
+                        WHERE conname = 'chk_users_no_self_referral'
+                          AND conrelid = 'sys.users'::regclass
+                      ) THEN
+                        ALTER TABLE sys.users
+                          ADD CONSTRAINT chk_users_no_self_referral
+                          CHECK (referred_by IS NULL OR referred_by <> id);
+                      END IF;
+                END$$;
 
                     CREATE OR REPLACE VIEW sys.vw_products_search AS
                     SELECT

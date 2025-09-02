@@ -658,16 +658,19 @@ ON CONFLICT DO NOTHING;
 
             // Seed demo brand, category, product and image
             using (var cmd = new NpgsqlCommand(@"
-INSERT INTO sys.brands (id, name, status, created_at)
-VALUES ('aaaaaaaa-0000-0000-0000-aaaaaaaa0000','Acme','ACTIVE', now())
-ON CONFLICT (id) DO NOTHING;
+ 
 
 INSERT INTO sys.product_categories (id, name, slug, created_at)
 VALUES ('bbbbbbbb-0000-0000-0000-bbbbbbbb0000','Phones','phones', now())
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sys.products (id, brand_id, category_id, slug, price, status, created_at)
-VALUES ('cccccccc-0000-0000-0000-cccccccc0000','aaaaaaaa-0000-0000-0000-aaaaaaaa0000','bbbbbbbb-0000-0000-0000-bbbbbbbb0000','acme-phone-1', 199.99,'ACTIVE', now())
+VALUES (
+  'cccccccc-0000-0000-0000-cccccccc0000',
+  (SELECT id FROM sys.brands WHERE name='Acme'),
+  'bbbbbbbb-0000-0000-0000-bbbbbbbb0000',
+  'acme-phone-1', 199.99,'ACTIVE', now()
+)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO sys.product_translations (id, product_id, language_code, name, description)
