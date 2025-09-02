@@ -1,36 +1,30 @@
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository.QueryBuilder;
 
 public interface IQueryBuilder
 {
     IQueryBuilder From<T>(string? alias = null);
-    IQueryBuilder Select(params string[] columns);
-    IQueryBuilder Where(string key, string op, object? value);
-    IQueryBuilder Where<T>(Expression<Func<T,bool>> predicate);
-    IQueryBuilder And(string key, string op, object? value);
-    IQueryBuilder Or(string key, string op, object? value);
-    IQueryBuilder Join<TLeft,TRight>(string leftKey, string rightKey, string? alias = null);
-    IQueryBuilder LeftJoin<TLeft,TRight>(string leftKey, string rightKey, string? alias = null);
-    IQueryBuilder RightJoin<TLeft,TRight>(string leftKey, string rightKey, string? alias = null);
-    IQueryBuilder GroupBy(params string[] keys);
-    IQueryBuilder Having(string key, string op, object? value);
-    IQueryBuilder Distinct();
-    IQueryBuilder OrderBy(string key);
-    IQueryBuilder OrderByDescending(string key);
-    IQueryBuilder ThenBy(string key);
-    IQueryBuilder ThenByDescending(string key);
-    IQueryBuilder Page(int page, int pageSize);
-    IQueryBuilder Top(int n);
+    IQueryBuilder Select(params string[] columns);             // default: "*"
 
-    Task<List<T>> ToListAsync<T>(CancellationToken ct = default) where T : new();
-    Task<T?> FirstOrDefaultAsync<T>(CancellationToken ct = default) where T : new();
-    Task<long> CountAsync(CancellationToken ct = default);
-    Task<bool> ExistsAsync(CancellationToken ct = default);
-    Task<int> ExecuteAsync(CancellationToken ct = default);
+    IQueryBuilder WhereRaw(string raw, object? param = null);  // raw snippet + optional anonymous params
+    IQueryBuilder WhereEq(string column, object? value);
+    IQueryBuilder WhereLike(string column, string pattern, bool caseInsensitive = false);
+    IQueryBuilder WhereGroup(Action<IQueryBuilder> groupBuilder, string boolean = "AND"); // wraps ( ... )
 
-    (string Sql, Dictionary<string,object> Params) BuildSql();
+    IQueryBuilder WithSearch(string? searchValue, IEnumerable<string> searchColumns);
+    IQueryBuilder WithFilters(IDictionary<string,string> filters,
+                              IDictionary<string,string> columnMappings,
+                              ISet<string>? likeFilterKeys = null);
+
+    IQueryBuilder OrderBy(string orderBySql);
+    IQueryBuilder OrderByMapped(string? requestedColumn,
+                                string direction,
+                                IDictionary<string,string> columnMappings,
+                                string defaultOrderBy);
+
+    IQueryBuilder Paginate(int page, int pageSize);
+
+    (string Sql, IDictionary<string, object> Params) Build();
+    IQueryBuilder Clone();
+    string ToCountSql();
 }

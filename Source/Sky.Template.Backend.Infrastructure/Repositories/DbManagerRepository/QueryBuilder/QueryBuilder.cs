@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using Sky.Template.Backend.Core.Attributes;
 using Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository.Sql;
 
@@ -11,294 +9,234 @@ namespace Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository.Q
 public class QueryBuilder : IQueryBuilder
 {
     private readonly ISqlDialect _dialect;
-    private readonly ExpressionSqlTranslator _translator;
-    private readonly Dictionary<string, EntityMap> _aliases = new(StringComparer.OrdinalIgnoreCase);
     private readonly List<string> _select = new();
-    private readonly List<(string Conj,string Sql)> _where = new();
+    private string? _from;
+    private readonly List<(string Bool, string Sql)> _wheres = new();
     private readonly List<string> _joins = new();
-    private readonly List<string> _groupBy = new();
-    private readonly List<string> _having = new();
-    private readonly List<string> _order = new();
-    private readonly Dictionary<string, object?> _params = new();
-    private string? _fromTable;
-    private string? _fromAlias;
-    private bool _distinct;
-    private int? _top;
+    private string? _orderBy;
     private int? _page;
     private int? _pageSize;
+    private readonly Dictionary<string, object> _params = new();
     private int _paramIndex;
 
     public QueryBuilder(ISqlDialect dialect)
     {
         _dialect = dialect;
-        _translator = new ExpressionSqlTranslator(dialect);
     }
 
     public IQueryBuilder From<T>(string? alias = null)
     {
-        var map = EntityMap.Get(typeof(T));
         var tableAttr = typeof(T).GetCustomAttribute<TableNameAttribute>();
-        _fromTable = tableAttr?.Name ?? typeof(T).Name;
-        _fromAlias = alias ?? "t";
-        _aliases[_fromAlias] = map;
-        return this;
-    }
-
-    public IQueryBuilder From(string table, IEnumerable<string> columns, string? alias = null)
-    {
-        _fromTable = table;
-        _fromAlias = alias ?? "t";
-        _aliases[_fromAlias] = EntityMap.ForColumns(columns);
+        var table = tableAttr?.Name ?? typeof(T).Name;
+        _from = $"{_dialect.Quote(table)} {(alias ?? "t")}";
         return this;
     }
 
     public IQueryBuilder Select(params string[] columns)
     {
-        foreach (var col in columns)
+        _select.AddRange(columns);
+        return this;
+    }
+
+    public IQueryBuilder WhereRaw(string raw, object? param = null)
+    {
+        _wheres.Add(("AND", raw));
+        if (param != null)
         {
-            _select.Add(ResolveColumn(col));
+            foreach (var prop in param.GetType().GetProperties())
+            {
+                _params[$"{_dialect.ParameterPrefix}{prop.Name}"] = prop.GetValue(param)!;
+            }
         }
         return this;
     }
 
-    public IQueryBuilder Where(string key, string op, object? value) => AddCondition("AND", key, op, value);
-    public IQueryBuilder And(string key, string op, object? value) => AddCondition("AND", key, op, value);
-    public IQueryBuilder Or(string key, string op, object? value) => AddCondition("OR", key, op, value);
-
-    public IQueryBuilder WhereRaw(string sql, params object?[] values) => AddRaw("AND", sql, values);
-    public IQueryBuilder AndRaw(string sql, params object?[] values) => AddRaw("AND", sql, values);
-    public IQueryBuilder OrRaw(string sql, params object?[] values) => AddRaw("OR", sql, values);
-
-    public IQueryBuilder Where<T>(Expression<Func<T, bool>> predicate)
+    public IQueryBuilder WhereEq(string column, object? value)
     {
-        var alias = _aliases.FirstOrDefault(a => a.Value.EntityType == typeof(T)).Key;
-        if (alias == null) throw new InvalidOperationException("InvalidColumn");
-        string Resolver(string prop)
+        var p = AddParam(value);
+        _wheres.Add(("AND", $"{column} = {p}"));
+        return this;
+    }
+
+    public IQueryBuilder WhereLike(string column, string pattern, bool caseInsensitive = false)
+    {
+        var p = AddParam(pattern);
+        _wheres.Add(("AND", $"{column} {_dialect.LikeOperator(caseInsensitive)} {p}"));
+        return this;
+    }
+ 
+    public IQueryBuilder WhereGroup(Action<IQueryBuilder> groupBuilder, string boolean = "AND")
+    {
+        var sub = new QueryBuilder(_dialect);
+        sub._paramIndex = _paramIndex;
+        groupBuilder(sub);
+        foreach (var kv in sub._params)
+            _params[kv.Key] = kv.Value;
+        _paramIndex = sub._paramIndex;
+        var sb = new StringBuilder();
+        bool first = true;
+        foreach (var w in sub._wheres)
         {
-            var map = _aliases[alias];
-            if (!map.Properties.TryGetValue(prop, out var col)) throw new InvalidOperationException("InvalidColumn");
-            return $"{alias}.{_dialect.Quote(col)}";
+            if (!first) sb.Append(' ').Append(w.Bool).Append(' ');
+            sb.Append(w.Sql);
+            first = false;
         }
-        var (sql, prms) = _translator.Translate(predicate, Resolver);
-        for (int i = 0; i < prms.Count; i++)
+        if (sb.Length > 0)
+            _wheres.Add((boolean.ToUpperInvariant(), $"({sb})"));
+        return this;
+    }
+
+    public IQueryBuilder WithSearch(string? searchValue, IEnumerable<string> searchColumns)
+    {
+        if (string.IsNullOrWhiteSpace(searchValue) || searchColumns == null || !searchColumns.Any())
+            return this;
+        var p = AddParam($"%{searchValue}%");
+        var like = _dialect.LikeOperator(false);
+        var parts = searchColumns.Select(c => $"{c} {like} {p}");
+        _wheres.Add(("AND", $"({string.Join(" OR ", parts)})"));
+        return this;
+    }
+
+    public IQueryBuilder WithFilters(IDictionary<string, string> filters, IDictionary<string, string> columnMappings, ISet<string>? likeFilterKeys = null)
+    {
+        foreach (var kv in filters)
         {
-            var nameOld = $"{_dialect.ParameterPrefix}p{i}";
-            var name = NextParam(prms[i]);
-            sql = sql.Replace(nameOld, name);
+            if (!columnMappings.TryGetValue(kv.Key, out var mapped))
+                continue;
+            if (mapped.Contains(_dialect.ParameterPrefix))
+            {
+                _wheres.Add(("AND", mapped));
+                var regex = new Regex(Regex.Escape(_dialect.ParameterPrefix) + "[A-Za-z0-9_]+");
+                var match = regex.Match(mapped);
+                if (match.Success)
+                    _params[match.Value] = kv.Value;
+            }
+            else if (likeFilterKeys?.Contains(kv.Key) == true)
+            {
+                var p = AddParam($"%{kv.Value}%");
+                _wheres.Add(("AND", $"{mapped} {_dialect.LikeOperator(false)} {p}"));
+            }
+            else
+            {
+                var p = AddParam(kv.Value);
+                _wheres.Add(("AND", $"{mapped} = {p}"));
+            }
         }
-        _where.Add(("AND", sql));
         return this;
     }
 
-    public IQueryBuilder Join<TLeft, TRight>(string leftKey, string rightKey, string? alias = null)
-        => AddJoin("JOIN", typeof(TLeft), typeof(TRight), leftKey, rightKey, alias);
-
-    public IQueryBuilder LeftJoin<TLeft, TRight>(string leftKey, string rightKey, string? alias = null)
-        => AddJoin("LEFT JOIN", typeof(TLeft), typeof(TRight), leftKey, rightKey, alias);
-
-    public IQueryBuilder RightJoin<TLeft, TRight>(string leftKey, string rightKey, string? alias = null)
-        => AddJoin("RIGHT JOIN", typeof(TLeft), typeof(TRight), leftKey, rightKey, alias);
-
-    private IQueryBuilder AddJoin(string joinType, Type left, Type right, string leftKey, string rightKey, string? alias)
+    public IQueryBuilder OrderBy(string orderBySql)
     {
-        var leftAlias = _aliases.First(a => a.Value.EntityType == left).Key;
-        var rightAlias = alias ?? $"t{_aliases.Count}";
-        var rightMap = EntityMap.Get(right);
-        _aliases[rightAlias] = rightMap;
-        var leftCol = ResolveColumn($"{leftAlias}.{leftKey}");
-        var rightTableAttr = right.GetCustomAttribute<TableNameAttribute>();
-        var rightTable = rightTableAttr?.Name ?? right.Name;
-        var rightCol = ResolveColumn($"{rightAlias}.{rightKey}");
-        _joins.Add($"{joinType} {_dialect.Quote(rightTable)} {rightAlias} ON {leftCol} = {rightCol}");
+        _orderBy = orderBySql;
         return this;
     }
 
-    public IQueryBuilder GroupBy(params string[] keys)
+    public IQueryBuilder OrderByMapped(string? requestedColumn, string direction, IDictionary<string, string> columnMappings, string defaultOrderBy)
     {
-        foreach (var k in keys) _groupBy.Add(ResolveColumn(k));
+        if (requestedColumn != null && columnMappings.TryGetValue(requestedColumn, out var mapped))
+        {
+            direction = direction.Equals("ASC", StringComparison.OrdinalIgnoreCase) ? "ASC" : "DESC";
+            _orderBy = $"{mapped} {direction}";
+        }
+        else
+        {
+            _orderBy = defaultOrderBy;
+        }
         return this;
     }
 
-    public IQueryBuilder Having(string key, string op, object? value)
+    public IQueryBuilder Paginate(int page, int pageSize)
     {
-        var column = ResolveColumn(key);
-        var expr = BuildOperator(column, op, value);
-        _having.Add(expr);
-        return this;
-    }
-
-    public IQueryBuilder Distinct() { _distinct = true; return this; }
-
-    public IQueryBuilder OrderBy(string key) { _order.Add($"{ResolveColumn(key)} ASC"); return this; }
-    public IQueryBuilder OrderByDescending(string key) { _order.Add($"{ResolveColumn(key)} DESC"); return this; }
-    public IQueryBuilder ThenBy(string key) => OrderBy(key);
-    public IQueryBuilder ThenByDescending(string key) => OrderByDescending(key);
-
-    public IQueryBuilder Page(int page, int pageSize)
-    {
-        if (page < 1 || pageSize < 1 || pageSize > 1000) throw new ArgumentOutOfRangeException("PageOutOfRange");
         _page = page;
         _pageSize = pageSize;
         return this;
     }
 
-    public IQueryBuilder Top(int n) { _top = n; return this; }
-
-    private IQueryBuilder AddCondition(string conj, string key, string op, object? value)
+    public (string Sql, IDictionary<string, object> Params) Build()
     {
-        var column = ResolveColumn(key);
-        var expr = BuildOperator(column, op, value);
-        _where.Add((conj, expr));
-        return this;
-    }
-
-    private IQueryBuilder AddRaw(string conj, string sql, params object?[] values)
-    {
-        var expr = sql;
-        foreach (var v in values)
+        var sb = new StringBuilder();
+        sb.Append("SELECT ");
+        if (_select.Count > 0) sb.Append(string.Join(", ", _select));
+        else sb.Append("*");
+        sb.Append(" FROM ").Append(_from);
+        foreach (var j in _joins) sb.Append(' ').Append(j);
+        if (_wheres.Count > 0)
         {
-            var p = NextParam(v);
-            expr = expr.Replace("?", p, StringComparison.Ordinal);
-        }
-        _where.Add((conj, expr));
-        return this;
-    }
-
-    private string BuildOperator(string column, string op, object? value)
-    {
-        return op.ToLowerInvariant() switch
-        {
-            "eq" => $"{column} = {NextParam(value)}",
-            "ne" => $"{column} <> {NextParam(value)}",
-            "lt" => $"{column} < {NextParam(value)}",
-            "gt" => $"{column} > {NextParam(value)}",
-            "lte" => $"{column} <= {NextParam(value)}",
-            "gte" => $"{column} >= {NextParam(value)}",
-            "like" => $"{column} {_dialect.LikeOperator(false)} {NextParam(EscapeLike(value?.ToString() ?? string.Empty))} ESCAPE '\\'",
-            "ilike" => $"{column} {_dialect.LikeOperator(true)} {NextParam(EscapeLike(value?.ToString() ?? string.Empty))} ESCAPE '\\'",
-            "in" => BuildIn(column, value),
-            "between" => BuildBetween(column, value),
-            "isnull" => $"{column} IS NULL",
-            "notnull" => $"{column} IS NOT NULL",
-            _ => throw new NotSupportedException("InvalidOperator")
-        };
-    }
-
-    private string BuildIn(string column, object? value)
-    {
-        if (value is not IEnumerable en) throw new ArgumentException("InvalidOperator");
-        var list = new List<string>();
-        foreach (var v in en)
-            list.Add(NextParam(v));
-        return $"{column} IN ({string.Join(",", list)})";
-    }
-
-    private string BuildBetween(string column, object? value)
-    {
-        if (value is IEnumerable en)
-        {
-            var vals = en.Cast<object?>().Take(2).ToArray();
-            if (vals.Length == 2)
+            sb.Append(" WHERE ");
+            bool first = true;
+            foreach (var w in _wheres)
             {
-                var p1 = NextParam(vals[0]);
-                var p2 = NextParam(vals[1]);
-                return $"{column} BETWEEN {p1} AND {p2}";
+                if (!first) sb.Append(' ').Append(w.Bool).Append(' ');
+                sb.Append(w.Sql);
+                first = false;
             }
         }
-        throw new ArgumentException("InvalidOperator");
-    }
-
-    private string ResolveColumn(string key)
-    {
-        var alias = _fromAlias!;
-        var col = key;
-        if (key.Contains('.'))
+        if (!string.IsNullOrEmpty(_orderBy))
+            sb.Append(" ORDER BY ").Append(_orderBy);
+        if (_page.HasValue)
+            sb.Append(' ').Append(_dialect.Paginate(_page.Value, _pageSize!.Value));
+        var prms = new Dictionary<string, object>(_params);
+        if (_page.HasValue)
         {
-            var parts = key.Split('.', 2);
-            alias = parts[0];
-            col = parts[1];
+            prms[$"{_dialect.ParameterPrefix}Offset"] = (_page.Value - 1) * _pageSize!.Value;
+            prms[$"{_dialect.ParameterPrefix}PageSize"] = _pageSize!.Value;
         }
-        if (!_aliases.TryGetValue(alias, out var map)) throw new InvalidOperationException("InvalidColumn");
-        if (!map.Columns.ContainsKey(col)) throw new InvalidOperationException("InvalidColumn");
-        return $"{alias}.{_dialect.Quote(col)}";
+        return (sb.ToString(), prms);
     }
 
-    private string NextParam(object? value)
+    public IQueryBuilder Clone()
+    {
+        var clone = new QueryBuilder(_dialect)
+        {
+            _from = _from,
+            _orderBy = _orderBy,
+            _page = _page,
+            _pageSize = _pageSize,
+            _paramIndex = _paramIndex
+        };
+        clone._select.AddRange(_select);
+        clone._wheres.AddRange(_wheres);
+        clone._joins.AddRange(_joins);
+        foreach (var kv in _params) clone._params[kv.Key] = kv.Value;
+        return clone;
+    }
+
+    public string ToCountSql()
+    {
+        var clone = (QueryBuilder)Clone();
+        clone._select.Clear();
+        clone._orderBy = null;
+        clone._page = null;
+        clone._pageSize = null;
+        var (sql, _) = clone.Build();
+        var fromIndex = FindTopLevelFrom(sql);
+        var from = sql.Substring(fromIndex);
+        from = _dialect.StripOrderBy(from);
+        return _dialect.CountWrap(from);
+    }
+
+    private string AddParam(object? value)
     {
         var name = $"{_dialect.ParameterPrefix}p{_paramIndex++}";
         _params[name] = value ?? DBNull.Value;
         return name;
     }
 
-    private static string EscapeLike(string value)
-        => value.Replace("\\", "\\\\").Replace("%", "\\%").Replace("_", "\\_");
-
-    public (string Sql, Dictionary<string, object> Params) BuildSql()
+    private static int FindTopLevelFrom(string sql)
     {
-        var (sql, prms) = BuildSqlCore(true, true);
-        return (sql, prms);
-    }
-
-    private (string Sql, Dictionary<string, object> Params) BuildSqlCore(bool includeOrder, bool includePagination)
-    {
-        var sb = new StringBuilder();
-        var topFragment = _top.HasValue ? _dialect.Top(_top.Value) : null;
-        sb.Append("SELECT ");
-        if (_distinct) sb.Append("DISTINCT ");
-        if (topFragment != null && topFragment.StartsWith("TOP")) sb.Append(topFragment + " ");
-        if (_select.Any()) sb.Append(string.Join(", ", _select));
-        else
+        var upper = sql.ToUpperInvariant();
+        int depth = 0;
+        bool inString = false;
+        for (int i = 0; i < upper.Length - 4; i++)
         {
-            var map = _aliases[_fromAlias!];
-            sb.Append(string.Join(", ", map.Columns.Keys.Select(c => $"{_fromAlias}.{_dialect.Quote(c)}")));
+            var c = upper[i];
+            if (c == '\'' ) inString = !inString;
+            if (inString) continue;
+            if (c == '(') depth++;
+            else if (c == ')') depth--;
+            else if (depth == 0 && upper.Substring(i, 4) == "FROM")
+                return i;
         }
-        sb.Append($" FROM {_dialect.Quote(_fromTable!)} {_fromAlias}");
-        foreach (var j in _joins) sb.Append(" ").Append(j);
-        if (_where.Any())
-        {
-            sb.Append(" WHERE ");
-            bool first = true;
-            foreach (var w in _where)
-            {
-                if (!first) sb.Append(" ").Append(w.Conj).Append(" ");
-                sb.Append(w.Sql);
-                first = false;
-            }
-        }
-        if (_groupBy.Any()) sb.Append(" GROUP BY ").Append(string.Join(", ", _groupBy));
-        if (_having.Any()) sb.Append(" HAVING ").Append(string.Join(" AND ", _having));
-        if (includeOrder && _order.Any()) sb.Append(" ORDER BY ").Append(string.Join(", ", _order));
-        if (includePagination && _page.HasValue) sb.Append(" ").Append(_dialect.Paginate(_page.Value, _pageSize!.Value));
-        else if (topFragment != null && topFragment.StartsWith("LIMIT") && includePagination) sb.Append(" ").Append(topFragment);
-        return (sb.ToString(), new Dictionary<string, object>(_params));
-    }
-
-    public async Task<List<T>> ToListAsync<T>(CancellationToken ct = default) where T : new()
-    {
-        var (sql, prms) = BuildSql();
-        return await DbManager.ReadAsync<T>(sql, prms, null);
-    }
-
-    public async Task<T?> FirstOrDefaultAsync<T>(CancellationToken ct = default) where T : new()
-    {
-        var list = await ToListAsync<T>(ct);
-        return list.FirstOrDefault();
-    }
-
-    public async Task<long> CountAsync(CancellationToken ct = default)
-    {
-        var (sql, prms) = BuildSqlCore(false, false);
-        var wrapped = _dialect.CountWrap(_dialect.StripOrderBy(sql));
-        return await DbManager.ExecuteScalarAsync<long>(wrapped, prms);
-    }
-
-    public async Task<bool> ExistsAsync(CancellationToken ct = default)
-        => (await CountAsync(ct)) > 0;
-
-    public async Task<int> ExecuteAsync(CancellationToken ct = default)
-    {
-        var (sql, prms) = BuildSql();
-        return await DbManager.ExecuteNonQueryAsync(sql, prms, null) ? 1 : 0;
+        return 0;
     }
 }
-

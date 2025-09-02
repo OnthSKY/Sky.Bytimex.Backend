@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
@@ -32,6 +33,29 @@ public static class Utils
             .AddJsonFile(settingsName, optional: true, reloadOnChange: true) 
             .AddEnvironmentVariables()
             .Build();
+    }
+    public static string StripOrderByImpl(string sql)
+    {
+        var upper = sql.ToUpperInvariant();
+        var sb = new StringBuilder();
+        int depth = 0;
+        bool inString = false;
+        for (int i = 0; i < upper.Length; i++)
+        {
+            var c = upper[i];
+            if (c == '\'') inString = !inString;
+            if (!inString)
+            {
+                if (c == '(') depth++;
+                else if (c == ')') depth--;
+                else if (depth == 0 && i < upper.Length - 8 && upper.Substring(i, 8) == "ORDER BY")
+                {
+                    return sb.ToString().TrimEnd();
+                }
+            }
+            sb.Append(sql[i]);
+        }
+        return sb.ToString();
     }
     public static string ConvertToUpperEnglish(string input)
     {
