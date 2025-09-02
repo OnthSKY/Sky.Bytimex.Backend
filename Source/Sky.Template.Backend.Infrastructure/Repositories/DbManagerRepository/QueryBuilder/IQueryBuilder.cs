@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 
 namespace Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository.QueryBuilder;
 
@@ -10,7 +9,7 @@ public interface IQueryBuilder
     IQueryBuilder WhereRaw(string raw, object? param = null);  // raw snippet + optional anonymous params
     IQueryBuilder WhereEq(string column, object? value);
     IQueryBuilder WhereLike(string column, string pattern, bool caseInsensitive = false);
-    IQueryBuilder WhereGroup(System.Action<IQueryBuilder> groupBuilder, string boolean = "AND"); // wraps ( ... )
+    IQueryBuilder WhereGroup(Action<IQueryBuilder> groupBuilder, string boolean = "AND"); // wraps ( ... )
 
     IQueryBuilder WithSearch(string? searchValue, IEnumerable<string> searchColumns);
     IQueryBuilder WithFilters(IDictionary<string,string> filters,

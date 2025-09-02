@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -67,7 +64,7 @@ public class QueryBuilder : IQueryBuilder
         _wheres.Add(("AND", $"{column} {_dialect.LikeOperator(caseInsensitive)} {p}"));
         return this;
     }
-
+ 
     public IQueryBuilder WhereGroup(Action<IQueryBuilder> groupBuilder, string boolean = "AND")
     {
         var sub = new QueryBuilder(_dialect);
