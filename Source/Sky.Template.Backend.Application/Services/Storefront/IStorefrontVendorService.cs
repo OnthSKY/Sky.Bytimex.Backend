@@ -2,6 +2,7 @@ using Sky.Template.Backend.Contract.Responses.Storefront;
 using Sky.Template.Backend.Core.Aspects.Autofac.Caching;
 using Sky.Template.Backend.Core.BaseResponse;
 using Sky.Template.Backend.Core.Constants;
+using Sky.Template.Backend.Core.CrossCuttingConcerns.Caching;
 using Sky.Template.Backend.Core.Exceptions;
 using Sky.Template.Backend.Core.Requests.Base;
 using Sky.Template.Backend.Infrastructure.Entities.Vendor;

@@ -3,6 +3,7 @@ using Sky.Template.Backend.Core.Requests.Base;
 using Sky.Template.Backend.Core.Utilities;
 using Sky.Template.Backend.Infrastructure.Entities;
 using Sky.Template.Backend.Infrastructure.Entities.Vendor;
+using Sky.Template.Backend.Infrastructure.Repositories.Base;
 using Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository;
 
 namespace Sky.Template.Backend.Infrastructure.Repositories;
