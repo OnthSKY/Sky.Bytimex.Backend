@@ -8,6 +8,7 @@ public static class ProductGridFilterConfig
     {
         { "id",           new ColumnMapping("p.id",            typeof(Guid)) },
         { "vendorId",     new ColumnMapping("p.vendor_id",     typeof(Guid)) },
+        { "vendor_id",    new ColumnMapping("p.vendor_id",     typeof(Guid)) },
         { "name",         new ColumnMapping("COALESCE(pt_lang.name, pt_any.name)", typeof(string)) },
         { "sku",          new ColumnMapping("p.sku",           typeof(string)) },
         { "status",       new ColumnMapping("p.status",        typeof(string)) },
@@ -15,7 +16,8 @@ public static class ProductGridFilterConfig
         { "minPrice",     new ColumnMapping("p.price >= @minPrice", typeof(decimal)) }, // hazır koşul
         { "maxPrice",     new ColumnMapping("p.price <= @maxPrice", typeof(decimal)) }, // hazır koşul
         { "createdAt",    new ColumnMapping("p.created_at",    typeof(DateTime)) },
-        { "slug",         new ColumnMapping("p.slug",          typeof(string)) }
+        { "slug",         new ColumnMapping("p.slug",          typeof(string)) },
+        { "vendor_slug",  new ColumnMapping("LOWER(v.slug)",   typeof(string)) }
     };
 
     public static HashSet<string> GetLikeFilterKeys() => new(StringComparer.OrdinalIgnoreCase)
