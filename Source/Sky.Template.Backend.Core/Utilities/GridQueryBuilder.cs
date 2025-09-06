@@ -8,13 +8,6 @@ using System.Text.RegularExpressions;
 
 namespace Sky.Template.Backend.Core.Utilities
 {
-    public enum SqlDialect
-    {
-        SqlServer,
-        PostgreSql,
-        MySql
-    }
-
     public sealed record ColumnMapping
     {
         public string Column { get; init; }
@@ -37,21 +30,21 @@ namespace Sky.Template.Backend.Core.Utilities
             ISqlDialect dialect
         )
         {
-            var prefix = dialect.ParameterPrefix; // "@"
+            var prefix = dialect.ParameterPrefix; // e.g. "@"
             bool hasWhere = HasMainQueryWhere(baseSql);
             var sql = new StringBuilder(baseSql);
             if (!hasWhere) sql.Append(" WHERE 1=1");
 
             var parameters = new Dictionary<string, object>();
 
-            // 🔍 Global search
+            // 🔍 Global search (FormatLike kullan)
             if (!string.IsNullOrWhiteSpace(request.SearchValue) && searchColumns?.Any() == true)
             {
                 var conds = new List<string>();
                 foreach (var col in searchColumns)
                 {
                     var p = $"{prefix}Search_{col.Replace(".", "_")}";
-                    conds.Add($"{col} {dialect.LikeOperator(caseInsensitive: true)} {p}");
+                    conds.Add(dialect.FormatLike(col, p, caseInsensitive: true));
                     parameters[p] = $"%{request.SearchValue}%";
                 }
                 sql.Append(" AND (").Append(string.Join(" OR ", conds)).Append(")");
@@ -67,18 +60,19 @@ namespace Sky.Template.Backend.Core.Utilities
                     var colSql = mapping.Column;
                     var p = $"{prefix}{kv.Key}";
 
+                    // LIKE filtre (FormatLike)
                     if (likeFilterKeys?.Contains(kv.Key) == true && mapping.DataType == typeof(string))
                     {
-                        sql.Append($" AND {colSql} {dialect.LikeOperator(mapping.CaseInsensitiveLike)} {p}");
+                        sql.Append(" AND ").Append(dialect.FormatLike(colSql, p, mapping.CaseInsensitiveLike));
                         parameters[p] = $"%{kv.Value}%";
                         continue;
                     }
 
-                    // hazır koşul: "p.price >= @minPrice" gibi
-                    if (colSql.Contains(prefix))
+                    // hazır koşul: "p.price >= @minPrice" gibi — parametreyi yakala ve değer bağla
+                    if (colSql.Contains(prefix, StringComparison.Ordinal))
                     {
                         sql.Append($" AND {colSql}");
-                        var fixedParam = ExtractFirstParamName(colSql);
+                        var fixedParam = ExtractFirstParamName(colSql, prefix);
                         if (!string.IsNullOrEmpty(fixedParam))
                             parameters[fixedParam] = ParseValue(mapping.DataType, kv.Value);
                         continue;
@@ -123,6 +117,14 @@ namespace Sky.Template.Backend.Core.Utilities
             return (sql.ToString(), parameters);
         }
 
+        // === CTE-aware count: ORDER BY + paging temizle, tamamını sar ===
+        public static string GenerateCountQuery(string fullSql, ISqlDialect dialect)
+        {
+            var noOrder = dialect.StripOrderBy(fullSql);
+            var noPage = dialect.StripPaging(noOrder);
+            return dialect.CountWrap(noPage);
+        }
+
         // helpers
         private static object ParseValue(Type t, string raw)
         {
@@ -155,9 +157,11 @@ namespace Sky.Template.Backend.Core.Utilities
         private static List<string> SplitCsv(string input) =>
             (input ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
 
-        private static string? ExtractFirstParamName(string sql)
+        // dialect prefix-aware
+        private static string? ExtractFirstParamName(string sql, string prefix)
         {
-            var m = Regex.Match(sql, @"@\w+");
+            var esc = Regex.Escape(prefix);
+            var m = Regex.Match(sql, $@"{esc}[A-Za-z0-9_]+");
             return m.Success ? m.Value : null;
         }
 
@@ -168,13 +172,6 @@ namespace Sky.Template.Backend.Core.Utilities
             if (!from.Success) return false;
             var after = stripped.Substring(from.Index);
             return Regex.IsMatch(after, @"\bWHERE\b", RegexOptions.IgnoreCase);
-        }
-
-        public static string GenerateCountQuery(string baseSql, ISqlDialect dialect)
-        {
-            // ORDER BY’ı temizle, dialect.CountWrap ile sar
-            var inner = dialect.StripOrderBy(baseSql);
-            return dialect.CountWrap(inner);
         }
     }
 }
