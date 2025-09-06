@@ -1,9 +1,10 @@
 using Sky.Template.Backend.Core.Attributes;
+using Sky.Template.Backend.Core.Localization;
 using Sky.Template.Backend.Infrastructure.Entities.Base;
 using Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository;
 
 namespace Sky.Template.Backend.Infrastructure.Entities.Product;
-
+[Translatable("sys.product_translations", "product_id", "language_code", "name", "description")]
 [TableName("products")]
 public class ProductEntity : BaseEntity<Guid>, ISoftDeletable
 {

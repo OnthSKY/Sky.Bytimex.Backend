@@ -1,9 +1,10 @@
 using Sky.Template.Backend.Core.Attributes;
+using Sky.Template.Backend.Core.Localization;
 using Sky.Template.Backend.Infrastructure.Entities.Base;
 using Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository;
 
 namespace Sky.Template.Backend.Infrastructure.Entities.System;
-
+[Translatable("sys.payment_method_translations", "payment_method_id", "language_code", "name", "description")]
 [TableName("payment_methods")]
 public class PaymentMethodEntity : BaseEntity<Guid>, ISoftDeletable
 {

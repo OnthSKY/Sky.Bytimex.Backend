@@ -1,10 +1,11 @@
 using Sky.Template.Backend.Core.Attributes;
+using Sky.Template.Backend.Core.Localization;
 using Sky.Template.Backend.Infrastructure.Entities.Base;
 using Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository;
 using System.Collections.Generic;
 
 namespace Sky.Template.Backend.Infrastructure.Entities.Brand;
-
+[Translatable("sys.brand_translations", "brand_id", "language_code", "name", "description")]
 [TableName("brands")]
 public class BrandEntity : BaseEntity<Guid>
 {

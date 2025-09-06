@@ -1,10 +1,14 @@
 ﻿using Sky.Template.Backend.Core.Context;
+using Sky.Template.Backend.Core.Helpers;
+using Sky.Template.Backend.Core.Localization;
 using Sky.Template.Backend.Core.Requests.Base;
 using Sky.Template.Backend.Core.Utilities;
 using Sky.Template.Backend.Infrastructure.Entities;
 using Sky.Template.Backend.Infrastructure.Entities.Base;
 using Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository;
+using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using System.Linq;
 
 namespace Sky.Template.Backend.Infrastructure.Repositories.Base;
 public class GridQueryConfig<T>
@@ -14,6 +18,9 @@ public class GridQueryConfig<T>
     public List<string>? SearchColumns { get; set; }
     public string DefaultOrderBy { get; set; } = "created_at DESC";
     public string BaseSql { get; set; } = $"SELECT * FROM {typeof(T).Name.ToLower()}s";
+
+    /// <summary>Optional translation configuration for this entity.</summary>
+    public TranslationConfig? Translation { get; set; }
 }
 
 public interface IRepository<T, TId> where T : BaseEntity<TId>, new()
@@ -34,40 +41,102 @@ public class Repository<T, TId> : IRepository<T, TId> where T : BaseEntity<TId>,
     private readonly string _tableName;
     private readonly string _schemaName;
     private readonly GridQueryConfig<T> _gridQueryConfig;
+    private readonly ILanguageResolver _langResolver;
 
-    public Repository(GridQueryConfig<T>? config = null)
+    public Repository(ILanguageResolver? langResolver = null, GridQueryConfig<T>? config = null)
     {
+        _langResolver = langResolver ??
+                        ServiceTool.ServiceProvider?.GetService<ILanguageResolver>() ??
+                        new DefaultLanguageResolver();
+
         _schemaName = GlobalSchema.Name;
         _tableName = EntityMetadataHelper.GetTableNameOrThrow<T>();
         _gridQueryConfig = config ?? new GridQueryConfig<T>
         {
-            BaseSql = $"SELECT * FROM {_schemaName}.{_tableName}"
+            BaseSql = $"SELECT * FROM {_schemaName}.{_tableName} t"
         };
+
+        var translatableAttr = typeof(T).GetCustomAttribute<TranslatableAttribute>();
+        if (translatableAttr != null)
+        {
+            _gridQueryConfig.Translation = new TranslationConfig
+            {
+                TranslationTable = translatableAttr.TranslationTable,
+                ForeignKeyColumn = translatableAttr.ForeignKeyColumn,
+                LanguageColumn = translatableAttr.LanguageColumn,
+                MainAlias = "t",
+                ProjectedColumns = translatableAttr.ProjectedColumns.Select(c => new TranslationColumn(c)).ToArray()
+            };
+        }
+    }
+
+    private (string sql, Dictionary<string, object> parameters) AttachLanguage(
+        string sql,
+        Dictionary<string, object>? parameters = null)
+    {
+        parameters ??= new Dictionary<string, object>();
+        if (_gridQueryConfig.Translation is not null)
+        {
+            parameters["@lang"] = _langResolver.GetLanguageOrDefault();
+        }
+        return (sql, parameters);
+    }
+
+    private string WrapWithTranslationsIfConfigured(string baseSql)
+    {
+        var cfg = _gridQueryConfig.Translation;
+        if (cfg is null) return baseSql;
+
+        var (joins, projection) = TranslationSqlBuilder.Build(cfg);
+        if (string.IsNullOrWhiteSpace(joins) || string.IsNullOrWhiteSpace(projection))
+            return baseSql;
+
+        var idxFrom = baseSql.IndexOf(" FROM ", StringComparison.OrdinalIgnoreCase);
+        if (idxFrom < 0) return baseSql;
+
+        var selectPart = baseSql[..idxFrom];
+        var fromPart = baseSql[idxFrom..];
+
+        var newSelect = selectPart.TrimEnd() + ",\n       " + projection + "\n";
+        var wrapped = newSelect + fromPart + "\n" + joins;
+        return wrapped;
+    }
+
+    private sealed class DefaultLanguageResolver : ILanguageResolver
+    {
+        public string GetLanguageOrDefault() => "en";
     }
 
     public async Task<T?> GetByIdAsync(TId id)
     {
-        var sql = $"SELECT * FROM {_schemaName}.{_tableName} WHERE id = @id AND is_deleted = FALSE";
-        var result = await DbManager.ReadAsync<T>(sql, new Dictionary<string, object> { { "@id", id } }, _schemaName);
+        var baseSql = $"SELECT * FROM {_schemaName}.{_tableName} t WHERE t.id = @id AND t.is_deleted = FALSE";
+        baseSql = WrapWithTranslationsIfConfigured(baseSql);
+        var (sql, parameters) = AttachLanguage(baseSql, new Dictionary<string, object> { { "@id", id! } });
+        var result = await DbManager.ReadAsync<T>(sql, parameters, _schemaName);
         return result.FirstOrDefault();
     }
 
     public async Task<IEnumerable<T>> GetAllAsync()
     {
-        var sql = $"SELECT * FROM {_schemaName}.{_tableName} WHERE is_deleted = FALSE";
-        return await DbManager.ReadAsync<T>(sql, new Dictionary<string, object>(), _schemaName);
+        var baseSql = $"SELECT * FROM {_schemaName}.{_tableName} t WHERE t.is_deleted = FALSE";
+        baseSql = WrapWithTranslationsIfConfigured(baseSql);
+        var (sql, parameters) = AttachLanguage(baseSql);
+        return await DbManager.ReadAsync<T>(sql, parameters, _schemaName);
     }
     public virtual async Task<(IEnumerable<T>, int TotalCount)> GetFilteredPaginatedAsync(GridRequest request)
     {
+        var baseSql = WrapWithTranslationsIfConfigured(_gridQueryConfig.BaseSql);
+
         var (sql, parameters) = GridQueryBuilder.Build(
-            baseSql: _gridQueryConfig.BaseSql,
+            baseSql: baseSql,
             request: request,
             columnMappings: _gridQueryConfig.ColumnMappings,
             defaultOrderBy: _gridQueryConfig.DefaultOrderBy,
             likeFilterKeys: _gridQueryConfig.LikeFilterKeys,
             searchColumns: _gridQueryConfig.SearchColumns,
-            dialect: DbManager.Dialect                    
+            dialect: DbManager.Dialect
         );
+        (sql, parameters) = AttachLanguage(sql, parameters);
 
         var data = await DbManager.ReadAsync<T>(sql, parameters, _schemaName);
 

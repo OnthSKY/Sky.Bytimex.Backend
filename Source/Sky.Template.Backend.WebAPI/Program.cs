@@ -15,6 +15,7 @@ using Sky.Template.Backend.Core.Configs;
 using Sky.Template.Backend.Core.Localization;
 using Sky.Template.Backend.Core.Helpers;
 using Sky.Template.Backend.Core.Initializer;
+using Sky.Template.Backend.Infrastructure.Localization;
 using Sky.Template.Backend.WebAPI.Configurations;
 using Sky.Template.Backend.WebAPI.Filters;
 using Sky.Template.Backend.WebAPI.Middleware;
@@ -62,7 +63,8 @@ builder.Services.AddVersionedApiExplorer(options =>
     options.SubstituteApiVersionInUrl = true;
 });
 
-builder.Services.AddHttpContextAccessor();
+  builder.Services.AddHttpContextAccessor();
+  builder.Services.AddScoped<ILanguageResolver, WebLanguageResolver>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
