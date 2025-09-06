@@ -28,7 +28,8 @@ public class CartRepository : Repository<CartEntity, Guid>, ICartRepository
             columnMappings: CartGridFilterConfig.GetColumnMappings(),
             defaultOrderBy: CartGridFilterConfig.GetDefaultOrder(),
             likeFilterKeys: CartGridFilterConfig.GetLikeFilterKeys(),
-            searchColumns: CartGridFilterConfig.GetSearchColumns()
+            searchColumns: CartGridFilterConfig.GetSearchColumns(),
+            DbManager.Dialect
         );
 
         var data = await DbManager.ReadAsync<CartEntity>(sql, parameters, GlobalSchema.Name);

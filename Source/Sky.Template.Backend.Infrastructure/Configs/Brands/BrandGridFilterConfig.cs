@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
+using Sky.Template.Backend.Core.Utilities;
 
 namespace Sky.Template.Backend.Infrastructure.Configs.Brands;
 
 public static class BrandGridFilterConfig
 {
-    public static Dictionary<string, string> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
+    public static Dictionary<string, ColumnMapping> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
     {
-        {"slug", "b.slug"},
-        {"name", "bt.name"},
-        {"status", "b.status"}
+        { "slug",   new ColumnMapping("b.slug",  typeof(string)) },
+        { "name",   new ColumnMapping("bt.name", typeof(string)) },
+        { "status", new ColumnMapping("b.status", typeof(string)) }
     };
 
     public static HashSet<string> GetLikeFilterKeys() => new(StringComparer.OrdinalIgnoreCase)

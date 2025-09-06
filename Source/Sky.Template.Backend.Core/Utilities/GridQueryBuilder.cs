@@ -1,165 +1,180 @@
 using Sky.Template.Backend.Core.Requests.Base;
 using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Sky.Template.Backend.Core.Utilities;
-
-// TODO: Remove GridQueryBuilder after migration is complete
-// Legacy SQL Server specific builder. Use QueryBuilder (Q) for new code.
-[Obsolete("Use QueryBuilder instead.")]
-public static class GridQueryBuilder
+namespace Sky.Template.Backend.Core.Utilities
 {
-    [Obsolete("Use QueryBuilder instead.")]
-    public static (string Sql, Dictionary<string, object> Params) Build(
-        string baseSql,
-        GridRequest request,
-        Dictionary<string, string> columnMappings,
-        string defaultOrderBy = "created_at DESC",
-        HashSet<string>? likeFilterKeys = null,
-        List<string>? searchColumns = null
-    )
+    public enum SqlDialect
     {
-        bool hasWhere = HasMainQueryWhere(baseSql);
+        SqlServer,
+        PostgreSql,
+        MySql
+    }
 
-        var sql = new StringBuilder(baseSql);
+    public sealed record ColumnMapping
+    {
+        public string Column { get; init; }
+        public Type DataType { get; init; }
+        public bool CaseInsensitiveLike { get; init; } = true;
 
-        if (!hasWhere)
+        public ColumnMapping(string column, Type dataType, bool caseInsensitiveLike = true)
+            => (Column, DataType, CaseInsensitiveLike) = (column, dataType, caseInsensitiveLike);
+    }
+
+    public static class GridQueryBuilder
+    {
+        public static (string Sql, Dictionary<string, object> Params) Build(
+            string baseSql,
+            GridRequest request,
+            Dictionary<string, ColumnMapping> columnMappings,
+            string defaultOrderBy,
+            HashSet<string>? likeFilterKeys,
+            List<string>? searchColumns,
+            ISqlDialect dialect
+        )
         {
-            sql.Append(" WHERE 1=1");
-        }
+            var prefix = dialect.ParameterPrefix; // "@"
+            bool hasWhere = HasMainQueryWhere(baseSql);
+            var sql = new StringBuilder(baseSql);
+            if (!hasWhere) sql.Append(" WHERE 1=1");
 
-        var parameters = new Dictionary<string, object>();
+            var parameters = new Dictionary<string, object>();
 
-        // 🔍 SearchValue - çoklu kolonlarda LIKE
-        if (!string.IsNullOrWhiteSpace(request.SearchValue) && searchColumns?.Any() == true)
-        {
-            var searchConditions = new List<string>();
-            foreach (var col in searchColumns)
+            // 🔍 Global search
+            if (!string.IsNullOrWhiteSpace(request.SearchValue) && searchColumns?.Any() == true)
             {
-                var paramName = $"@Search_{col.Replace(".", "_")}";
-                searchConditions.Add($"{col} LIKE {paramName}");
-                parameters[paramName] = $"%{request.SearchValue}%";
+                var conds = new List<string>();
+                foreach (var col in searchColumns)
+                {
+                    var p = $"{prefix}Search_{col.Replace(".", "_")}";
+                    conds.Add($"{col} {dialect.LikeOperator(caseInsensitive: true)} {p}");
+                    parameters[p] = $"%{request.SearchValue}%";
+                }
+                sql.Append(" AND (").Append(string.Join(" OR ", conds)).Append(")");
             }
 
-            sql.Append(" AND (");
-            sql.Append(string.Join(" OR ", searchConditions));
-            sql.Append(")");
-        }
-
-        // 🧩 Filters
-        foreach (var kvp in request.Filters)
-        {
-            if (columnMappings.TryGetValue(kvp.Key, out var column))
+            // 🧩 Filters
+            if (request.Filters != null)
             {
-                var paramKey = $"@{kvp.Key}";
-                if (likeFilterKeys?.Contains(kvp.Key) == true)
+                foreach (var kv in request.Filters)
                 {
-                    sql.Append($" AND {column} LIKE {paramKey}");
-                    parameters[paramKey] = $"%{kvp.Value}%";
-                }
-                else
-                {
-                    if (column.Contains("@"))
+                    if (!columnMappings.TryGetValue(kv.Key, out var mapping)) continue;
+
+                    var colSql = mapping.Column;
+                    var p = $"{prefix}{kv.Key}";
+
+                    if (likeFilterKeys?.Contains(kv.Key) == true && mapping.DataType == typeof(string))
                     {
-                        sql.Append($" AND {column}");
+                        sql.Append($" AND {colSql} {dialect.LikeOperator(mapping.CaseInsensitiveLike)} {p}");
+                        parameters[p] = $"%{kv.Value}%";
+                        continue;
+                    }
+
+                    // hazır koşul: "p.price >= @minPrice" gibi
+                    if (colSql.Contains(prefix))
+                    {
+                        sql.Append($" AND {colSql}");
+                        var fixedParam = ExtractFirstParamName(colSql);
+                        if (!string.IsNullOrEmpty(fixedParam))
+                            parameters[fixedParam] = ParseValue(mapping.DataType, kv.Value);
+                        continue;
+                    }
+
+                    // CSV → IN
+                    var parts = SplitCsv(kv.Value);
+                    if (parts.Count > 1)
+                    {
+                        var (inSql, inParams) = BuildInClause(colSql, kv.Key, parts.Select(v => ParseValue(mapping.DataType, v)).ToArray(), dialect);
+                        sql.Append($" AND {inSql}");
+                        foreach (var pair in inParams) parameters[pair.Key] = pair.Value;
                     }
                     else
                     {
-                        sql.Append($" AND {column} = {paramKey}");
+                        sql.Append($" AND {colSql} = {p}");
+                        parameters[p] = ParseValue(mapping.DataType, kv.Value);
                     }
-
-                    parameters[paramKey] = kvp.Value;
                 }
             }
-        }
 
-        // 🧾 Order
-        string orderBy;
-
-        if (columnMappings.TryGetValue(request.OrderColumn, out var mappedColumn))
-        {
-            var direction = request.OrderDirection.ToUpperInvariant() == "ASC" ? "ASC" : "DESC";
-            orderBy = $"{mappedColumn} {direction}";
-        }
-        else
-        {
-            orderBy = defaultOrderBy;
-        }
-
-        sql.Append($" ORDER BY {orderBy}");
-
-
-        // 📄 Paging
-        var offset = (request.Page - 1) * request.PageSize;
-        sql.Append(" OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY");
-
-        parameters.Add("@Offset", offset);
-        parameters.Add("@PageSize", request.PageSize);
-
-        return (sql.ToString(), parameters);
-    }
-    private static bool HasMainQueryWhere(string baseSql)
-    {
-        var sql = Regex.Replace(baseSql, @"\([^()]*\)", "");
-        var fromMatch = Regex.Match(sql, @"\bFROM\b", RegexOptions.IgnoreCase);
-
-        if (fromMatch.Success)
-        {
-            var fromIndex = fromMatch.Index;
-            var afterFrom = sql.Substring(fromIndex);
-            return Regex.IsMatch(afterFrom, @"\bWHERE\b", RegexOptions.IgnoreCase);
-        }
-
-        return false;
-    }
-
-    [Obsolete("Use QueryBuilder instead.")]
-    public static string GenerateCountQuery(string baseSql)
-    {
-        var sql = baseSql;
-
-        // FOR JSON PATH alt sorgusunu ve parantezlerini kaldır
-        var forJsonIndex = sql.IndexOf("FOR JSON PATH", StringComparison.OrdinalIgnoreCase);
-        if (forJsonIndex > 0)
-        {
-            var openParenIndex = sql.LastIndexOf('(', forJsonIndex);
-            var closeParenIndex = sql.IndexOf(')', forJsonIndex);
-            if (openParenIndex >= 0 && closeParenIndex > forJsonIndex)
+            // 🧾 Order
+            string orderBy;
+            if (!string.IsNullOrWhiteSpace(request.OrderColumn) &&
+                columnMappings.TryGetValue(request.OrderColumn, out var mapped))
             {
-                sql = sql.Remove(openParenIndex, closeParenIndex - openParenIndex + 1);
-
-                while (sql.Contains(",,"))
-                {
-                    sql = sql.Replace(",,", ",");
-                }
-
-                sql = sql.Trim();
-                if (sql.StartsWith(","))
-                {
-                    sql = sql.Substring(1).TrimStart();
-                }
-                if (sql.EndsWith(","))
-                {
-                    sql = sql.Substring(0, sql.Length - 1).TrimEnd();
-                }
-                while (sql.Contains("  "))
-                {
-                    sql = sql.Replace("  ", " ");
-                }
+                var dir = request.OrderDirection?.ToUpperInvariant() == "ASC" ? "ASC" : "DESC";
+                orderBy = $"{mapped.Column} {dir}";
             }
+            else
+            {
+                orderBy = defaultOrderBy;
+            }
+            sql.Append($" ORDER BY {orderBy}");
+
+            // 📄 Paging (dialect)
+            var offset = Math.Max(0, (request.Page - 1) * request.PageSize);
+            sql.Append(" ").Append(dialect.Paginate(request.Page, request.PageSize));
+            parameters[$"{prefix}Offset"] = offset;
+            parameters[$"{prefix}PageSize"] = request.PageSize;
+
+            return (sql.ToString(), parameters);
         }
 
-        var startIndex = sql.IndexOf("FROM", StringComparison.OrdinalIgnoreCase);
-        if (startIndex < 0)
-            throw new ArgumentException("BaseSqlMustContainFrom");
+        // helpers
+        private static object ParseValue(Type t, string raw)
+        {
+            if (t == typeof(Guid)) return Guid.Parse(raw);
+            if (t == typeof(int)) return int.Parse(raw, CultureInfo.InvariantCulture);
+            if (t == typeof(long)) return long.Parse(raw, CultureInfo.InvariantCulture);
+            if (t == typeof(decimal)) return decimal.Parse(raw, CultureInfo.InvariantCulture);
+            if (t == typeof(double)) return double.Parse(raw, CultureInfo.InvariantCulture);
+            if (t == typeof(float)) return float.Parse(raw, CultureInfo.InvariantCulture);
+            if (t == typeof(bool)) return raw.Equals("true", StringComparison.OrdinalIgnoreCase) || raw == "1";
+            if (t == typeof(DateTime)) return DateTime.Parse(raw, CultureInfo.InvariantCulture);
+            return raw; // string, default
+        }
 
-        var fromClause = sql.Substring(startIndex);
-        var orderIndex = fromClause.IndexOf("ORDER BY", StringComparison.OrdinalIgnoreCase);
-        if (orderIndex > 0)
-            fromClause = fromClause.Substring(0, orderIndex);
+        private static (string Sql, Dictionary<string, object> Params) BuildInClause(
+            string column, string key, object[] values, ISqlDialect dialect)
+        {
+            var dict = new Dictionary<string, object>();
+            var names = new List<string>();
+            for (int i = 0; i < values.Length; i++)
+            {
+                var p = $"{dialect.ParameterPrefix}{key}_{i}";
+                names.Add(p);
+                dict[p] = values[i];
+            }
+            var sql = $"{column} IN ({string.Join(", ", names)})";
+            return (sql, dict);
+        }
 
-        return $"SELECT COUNT(*) as count {fromClause}";
+        private static List<string> SplitCsv(string input) =>
+            (input ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+
+        private static string? ExtractFirstParamName(string sql)
+        {
+            var m = Regex.Match(sql, @"@\w+");
+            return m.Success ? m.Value : null;
+        }
+
+        private static bool HasMainQueryWhere(string baseSql)
+        {
+            var stripped = Regex.Replace(baseSql, @"\([^()]*\)", "");
+            var from = Regex.Match(stripped, @"\bFROM\b", RegexOptions.IgnoreCase);
+            if (!from.Success) return false;
+            var after = stripped.Substring(from.Index);
+            return Regex.IsMatch(after, @"\bWHERE\b", RegexOptions.IgnoreCase);
+        }
+
+        public static string GenerateCountQuery(string baseSql, ISqlDialect dialect)
+        {
+            // ORDER BY’ı temizle, dialect.CountWrap ile sar
+            var inner = dialect.StripOrderBy(baseSql);
+            return dialect.CountWrap(inner);
+        }
     }
-
 }

@@ -1,13 +1,19 @@
+using System;
+using System.Collections.Generic;
+using Sky.Template.Backend.Core.Utilities;
+
 namespace Sky.Template.Backend.Infrastructure.Configs.Sales;
 
 public static class CartGridFilterConfig
 {
-    public static Dictionary<string, string> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
+    public static Dictionary<string, ColumnMapping> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
     {
-        { "buyerId", "c.buyer_id" },
-        { "status", "c.status" },
-        { "currency", "c.currency" },
-        { "createdAt", "c.created_at" }
+        { "buyerId",   new ColumnMapping("c.buyer_id",   typeof(Guid)) },
+        { "status",    new ColumnMapping("c.status",     typeof(string)) },
+        { "currency",  new ColumnMapping("c.currency",   typeof(string)) },
+        { "couponCode",new ColumnMapping("c.coupon_code",typeof(string)) },
+        { "note",      new ColumnMapping("c.note",       typeof(string)) },
+        { "createdAt", new ColumnMapping("c.created_at", typeof(DateTime)) }
     };
 
     public static HashSet<string> GetLikeFilterKeys() => new(StringComparer.OrdinalIgnoreCase)

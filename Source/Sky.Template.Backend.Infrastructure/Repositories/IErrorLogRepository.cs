@@ -45,7 +45,8 @@ public class ErrorLogRepository : IErrorLogRepository
             columnMappings: ErrorLogGridFilterConfig.GetColumnMappings(),
             defaultOrderBy: ErrorLogGridFilterConfig.GetDefaultOrder(),
             likeFilterKeys: ErrorLogGridFilterConfig.GetLikeFilterKeys(),
-            searchColumns: ErrorLogGridFilterConfig.GetSearchColumns()
+            searchColumns: ErrorLogGridFilterConfig.GetSearchColumns(),
+            DbManager.Dialect
         );
         var data = await DbManager.ReadAsync<ErrorLogEntity>(sql, parameters, GlobalSchema.Name);
         var countSql = DbManager.Dialect.CountWrap(DbManager.Dialect.StripOrderBy(sql));

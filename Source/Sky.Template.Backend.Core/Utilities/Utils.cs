@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Configuration;
+using Sky.Template.Backend.Core.Requests.Base;
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -33,6 +34,21 @@ public static class Utils
             .AddJsonFile(settingsName, optional: true, reloadOnChange: true) 
             .AddEnvironmentVariables()
             .Build();
+    }
+    public static GridRequest CloneWithoutKeys(GridRequest req, IEnumerable<string> keysToRemove)
+    {
+        var clone = new GridRequest
+        {
+            Page = req.Page,
+            PageSize = req.PageSize,
+            OrderColumn = req.OrderColumn,
+            OrderDirection = req.OrderDirection,
+            SearchValue = req.SearchValue,
+            Filters = new Dictionary<string, string>(req.Filters ?? new(), StringComparer.OrdinalIgnoreCase)
+        };
+        foreach (var k in keysToRemove)
+            clone.Filters.Remove(k);
+        return clone;
     }
     public static string StripOrderByImpl(string sql)
     {

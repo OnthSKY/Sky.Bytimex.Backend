@@ -1,7 +1,6 @@
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository.Sql;
+using Sky.Template.Backend.Core.Utilities;
 
 namespace Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository.QueryBuilder;
 

@@ -47,7 +47,8 @@ public class BrandRepository : IBrandRepository
             columnMappings: BrandGridFilterConfig.GetColumnMappings(),
             defaultOrderBy: BrandGridFilterConfig.GetDefaultOrder(),
             likeFilterKeys: BrandGridFilterConfig.GetLikeFilterKeys(),
-            searchColumns: BrandGridFilterConfig.GetSearchColumns()
+            searchColumns: BrandGridFilterConfig.GetSearchColumns(),
+            DbManager.Dialect
         );
         parameters["@lang"] = preferredLang ?? "en";
         var data = await DbManager.ReadAsync<BrandListItemEntity>(sql, parameters, GlobalSchema.Name);

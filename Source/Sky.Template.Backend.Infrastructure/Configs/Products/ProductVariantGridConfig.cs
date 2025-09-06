@@ -1,17 +1,18 @@
 using System;
 using System.Collections.Generic;
+using Sky.Template.Backend.Core.Utilities;
 
 namespace Sky.Template.Backend.Infrastructure.Configs.Products;
 
 public static class ProductVariantGridConfig
 {
-    public static Dictionary<string, string> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
+    public static Dictionary<string, ColumnMapping> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
     {
-        { "sku", "v.sku" },
-        { "isActive", "v.is_active" },
-        { "price", "v.price" },
-        { "stockQuantity", "v.stock_quantity" },
-        { "createdAt", "v.created_at" }
+        { "sku",           new ColumnMapping("v.sku",            typeof(string)) },
+        { "isActive",      new ColumnMapping("v.is_active",      typeof(bool)) },
+        { "price",         new ColumnMapping("v.price",          typeof(decimal)) },
+        { "stockQuantity", new ColumnMapping("v.stock_quantity", typeof(int)) },
+        { "createdAt",     new ColumnMapping("v.created_at",     typeof(DateTime)) }
     };
 
     public static HashSet<string> GetLikeFilterKeys() => new(StringComparer.OrdinalIgnoreCase)
@@ -26,4 +27,3 @@ public static class ProductVariantGridConfig
 
     public static string GetDefaultOrder() => "v.created_at DESC";
 }
-

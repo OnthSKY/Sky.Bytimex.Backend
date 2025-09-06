@@ -27,7 +27,8 @@ public interface IDiscountUsageRepository
             columnMappings: DiscountUsageGridFilterConfig.GetColumnMappings(),
             defaultOrderBy: DiscountUsageGridFilterConfig.GetDefaultOrder(),
             likeFilterKeys: DiscountUsageGridFilterConfig.GetLikeFilterKeys(),
-            searchColumns: DiscountUsageGridFilterConfig.GetSearchColumns()
+            searchColumns: DiscountUsageGridFilterConfig.GetSearchColumns(),
+            DbManager.Dialect
         );
         var data = await DbManager.ReadAsync<DiscountUsageEntity>(sql, parameters, GlobalSchema.Name);
         var countSql = DbManager.Dialect.CountWrap(DbManager.Dialect.StripOrderBy(sql));

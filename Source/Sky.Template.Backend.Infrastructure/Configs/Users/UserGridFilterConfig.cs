@@ -1,15 +1,17 @@
-
+using System;
+using System.Collections.Generic;
+using Sky.Template.Backend.Core.Utilities;
 
 namespace Sky.Template.Backend.Infrastructure.Configs.Users;
 
 public static class UserGridFilterConfig
 {
-    public static Dictionary<string, string> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
+    public static Dictionary<string, ColumnMapping> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
     {
-        { "firstName", "u.name" },
-        { "lastName", "u.surname" },
-        { "email", "u.email" },
-        { "roleName", "r.name" }
+        { "firstName", new ColumnMapping("u.name",    typeof(string)) },
+        { "lastName",  new ColumnMapping("u.surname", typeof(string)) },
+        { "email",     new ColumnMapping("u.email",   typeof(string)) },
+        { "roleName",  new ColumnMapping("r.name",    typeof(string)) }
     };
 
     public static HashSet<string> GetLikeFilterKeys() => new(StringComparer.OrdinalIgnoreCase)

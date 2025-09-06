@@ -1,13 +1,15 @@
+using Sky.Template.Backend.Core.Utilities;
+
 namespace Sky.Template.Backend.Infrastructure.Configs.Sales;
 
 public static class DiscountGridFilterConfig
 {
-    public static Dictionary<string, string> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
+    public static Dictionary<string, ColumnMapping> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
     {
-        { "code", "d.code" },
-        { "startDate", "d.start_date >= @startDate" },
-        { "endDate", "d.end_date <= @endDate" },
-        { "createdAt", "d.created_at" }
+        { "code",       new ColumnMapping("d.code", typeof(string)) },
+        { "startDate",  new ColumnMapping("d.start_date >= @startDate", typeof(DateTime)) },
+        { "endDate",    new ColumnMapping("d.end_date <= @endDate",   typeof(DateTime)) },
+        { "createdAt",  new ColumnMapping("d.created_at", typeof(DateTime)) }
     };
 
     public static HashSet<string> GetLikeFilterKeys() => new(StringComparer.OrdinalIgnoreCase)

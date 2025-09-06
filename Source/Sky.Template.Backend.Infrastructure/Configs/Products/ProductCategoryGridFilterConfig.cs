@@ -1,13 +1,15 @@
+using Sky.Template.Backend.Core.Utilities;
+
 namespace Sky.Template.Backend.Infrastructure.Configs.Products;
 
 public static class ProductCategoryGridFilterConfig
 {
-    public static Dictionary<string, string> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
+    public static Dictionary<string, ColumnMapping> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
     {
-        { "name", "pc.name" },
-        { "parentCategoryId", "pc.parent_category_id" },
-        { "description", "pc.description" },
-        { "createdAt", "pc.created_at" }
+        { "name",             new ColumnMapping("pc.name",              typeof(string)) },
+        { "parentCategoryId", new ColumnMapping("pc.parent_category_id",typeof(Guid)) },
+        { "description",      new ColumnMapping("pc.description",       typeof(string)) },
+        { "createdAt",        new ColumnMapping("pc.created_at",        typeof(DateTime)) }
     };
 
     public static HashSet<string> GetLikeFilterKeys() => new(StringComparer.OrdinalIgnoreCase)

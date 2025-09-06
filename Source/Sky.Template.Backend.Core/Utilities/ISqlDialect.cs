@@ -1,4 +1,4 @@
-namespace Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository.Sql;
+﻿namespace Sky.Template.Backend.Core.Utilities;
 
 public interface ISqlDialect
 {

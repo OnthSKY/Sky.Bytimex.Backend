@@ -1,18 +1,22 @@
+using System;
+using System.Collections.Generic;
+using Sky.Template.Backend.Core.Utilities;
+
 namespace Sky.Template.Backend.Infrastructure.Configs.Sales;
 
 public static class ReturnGridFilterConfig
 {
-    public static Dictionary<string, string> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
+    public static Dictionary<string, ColumnMapping> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
     {
-        { "buyerId", "r.buyer_id" },
-        { "orderId", "r.order_id" },
-        { "status", "r.status" },
-        { "createdAt", "r.created_at" }
+        { "buyerId",   new ColumnMapping("r.buyer_id",   typeof(Guid)) },
+        { "orderId",   new ColumnMapping("r.order_id",   typeof(Guid)) },
+        { "status",    new ColumnMapping("r.status",     typeof(string)) },
+        { "createdAt", new ColumnMapping("r.created_at", typeof(DateTime)) }
     };
 
     public static HashSet<string> GetLikeFilterKeys() => new(StringComparer.OrdinalIgnoreCase)
     {
-        { "status" }
+        "status"
     };
 
     public static List<string> GetSearchColumns() => new()
@@ -23,4 +27,3 @@ public static class ReturnGridFilterConfig
 
     public static string GetDefaultOrder() => "r.created_at DESC";
 }
-

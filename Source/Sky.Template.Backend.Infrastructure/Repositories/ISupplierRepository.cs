@@ -28,7 +28,8 @@ public class SupplierRepository : Repository<SupplierEntity, Guid>, ISupplierRep
             columnMappings: SupplierGridFilterConfig.GetColumnMappings(),
             defaultOrderBy: SupplierGridFilterConfig.GetDefaultOrder(),
             likeFilterKeys: SupplierGridFilterConfig.GetLikeFilterKeys(),
-            searchColumns: SupplierGridFilterConfig.GetSearchColumns()
+            searchColumns: SupplierGridFilterConfig.GetSearchColumns(),
+            DbManager.Dialect
         );
 
         var data = await DbManager.ReadAsync<SupplierEntity>(sql, parameters, GlobalSchema.Name);

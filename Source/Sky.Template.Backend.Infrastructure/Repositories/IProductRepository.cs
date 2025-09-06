@@ -1,4 +1,4 @@
-using Sky.Template.Backend.Infrastructure.Entities.Product;
+﻿using Sky.Template.Backend.Infrastructure.Entities.Product;
 using Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository;
 using Sky.Template.Backend.Infrastructure.Entities;
 using Sky.Template.Backend.Infrastructure.Repositories.Base;
@@ -64,53 +64,149 @@ public class ProductRepository : Repository<ProductEntity, Guid>, IProductReposi
         return count.FirstOrDefault()?.Count == 0;
     }
 
-    public async Task<(IEnumerable<ProductLocalizedJoinEntity>, int TotalCount)> GetLocalizedProductsAsync(ProductFilterRequest request, bool onlyActive = false)
+    public async Task<(IEnumerable<ProductLocalizedJoinEntity>, int TotalCount)> GetLocalizedProductsAsync(
+      ProductFilterRequest request, bool onlyActive = false)
     {
-        var baseSql = @"SELECT p.id,
-                                p.vendor_id,
-                                p.slug,
-                                p.price,
-                                p.status,
-                                (SELECT image_url FROM sys.product_images i WHERE i.product_id = p.id AND i.is_primary = TRUE ORDER BY i.sort_order ASC LIMIT 1) AS primary_image_url,
-                                COALESCE(pt_lang.name, pt_any.name) AS name,
-                                COALESCE(pt_lang.description, pt_any.description) AS description,
-                                p.category_id,
-                                p.product_type,
-                                p.unit,
-                                p.barcode,
-                                p.stock_quantity,
-                                p.is_stock_tracked,
-                                p.sku,
-                                p.is_decimal_quantity_allowed,
-                                p.is_deleted,
-                                p.created_at,
-                                p.created_by,
-                                p.updated_at,
-                                p.updated_by,
-                                p.deleted_at,
-                                p.deleted_by,
-                                p.delete_reason
-                         FROM sys.products p
-                         LEFT JOIN LATERAL (
-                            SELECT name, description FROM sys.product_translations
-                            WHERE product_id = p.id AND language_code = @lang
-                            LIMIT 1
-                         ) pt_lang ON TRUE
-                         LEFT JOIN LATERAL (
-                            SELECT name, description FROM sys.product_translations
-                            WHERE product_id = p.id
-                            ORDER BY language_code
-                            LIMIT 1
-                         ) pt_any ON TRUE
-                         WHERE p.is_deleted = FALSE" + (onlyActive ? " AND p.status = 'ACTIVE'" : string.Empty);
+        // 1) Taban sorgu
+        var baseSql = @"
+        SELECT p.id,
+               p.vendor_id,
+               p.slug,
+               p.price,
+               p.status,
+               (SELECT image_url FROM sys.product_images i WHERE i.product_id = p.id AND i.is_primary = TRUE ORDER BY i.sort_order ASC LIMIT 1) AS primary_image_url,
+               COALESCE(pt_lang.name, pt_any.name) AS name,
+               COALESCE(pt_lang.description, pt_any.description) AS description,
+               p.category_id,
+               p.product_type,
+               p.unit,
+               p.barcode,
+               p.stock_quantity,
+               p.is_stock_tracked,
+               p.sku,
+               p.is_decimal_quantity_allowed,
+               p.is_deleted,
+               p.created_at,
+               p.created_by,
+               p.updated_at,
+               p.updated_by,
+               p.deleted_at,
+               p.deleted_by,
+               p.delete_reason
+        FROM sys.products p
+        LEFT JOIN LATERAL (
+            SELECT name, description FROM sys.product_translations
+            WHERE product_id = p.id AND language_code = @lang
+            LIMIT 1
+        ) pt_lang ON TRUE
+        LEFT JOIN LATERAL (
+            SELECT name, description FROM sys.product_translations
+            WHERE product_id = p.id
+            ORDER BY language_code
+            LIMIT 1
+        ) pt_any ON TRUE
+        WHERE p.is_deleted = FALSE" + (onlyActive ? " AND p.status = 'ACTIVE'" : "");
 
-        var (sql, parameters) = GridQueryBuilder.Build(baseSql, request, ProductGridFilterConfig.GetColumnMappings(), ProductGridFilterConfig.GetDefaultOrder(), ProductGridFilterConfig.GetLikeFilterKeys(), ProductGridFilterConfig.GetSearchColumns());
-        var languageCode = _httpContextAccessor.HttpContext?.Request.Headers["Accept-Language"].ToString()?.Split(',').FirstOrDefault()?.ToLower() ?? "en";
-        parameters["@lang"] = languageCode;
-        var data = await DbManager.ReadAsync<ProductLocalizedJoinEntity>(sql, parameters);
+        // 2) Kategori/Subcategory parametrelerini oku (Guid/CSV destekli)
+        // 2) Kategori/Subcategory parametrelerini oku (Guid/CSV destekli)
+        string? catRaw = null;
+        string? subRaw = null;
+
+        var hasCategory = request.Filters?.TryGetValue("categoryId", out catRaw) == true
+                          && !string.IsNullOrWhiteSpace(catRaw);
+        var hasSubCat = request.Filters?.TryGetValue("subcategoryId", out subRaw) == true
+                        && !string.IsNullOrWhiteSpace(subRaw);
+
+        var catIds = ParseGuids(catRaw);   // List<Guid>
+        var subIds = ParseGuids(subRaw);   // List<Guid>
+
+        // 3) CTE ve WHERE enjekte et (sadece ihtiyaç varsa)
+        var parameters = new Dictionary<string, object>();
+        if (hasCategory || hasSubCat)
+        {
+            // İki ayrı ağaç setini (category roots + subcategory roots) tek bir CTE'de birleştiriyoruz.
+            // roots: verilen tüm kökler (categoryId + subcategoryId)
+            // subcats: roots'tan aşağı tüm nodlar
+            baseSql =
+    $@"
+WITH roots AS (
+    -- categoryId listesi
+    SELECT UNNEST(@categoryIds::uuid[]) AS id
+    UNION
+    -- subcategoryId listesi
+    SELECT UNNEST(@subcategoryIds::uuid[])
+),
+subcats AS (
+    SELECT id
+    FROM sys.product_categories
+    WHERE id IN (SELECT id FROM roots)
+  UNION ALL
+    SELECT c.id
+    FROM sys.product_categories c
+    JOIN subcats s ON c.parent_category_id = s.id
+)
+{baseSql}
+  AND p.category_id IN (SELECT id FROM subcats)
+";
+
+            // paramları bağla (boşsa boş dizi ver)
+            if (catIds.Count > 0)
+            {
+                parameters["@categoryIds"] = catIds.ToArray();
+
+            }
+
+            if (subIds.Count > 0)
+            {
+                parameters["@subcategoryIds"] =subIds.ToArray();
+            }
+        }
+
+        // 4) GridQueryBuilder’a giderken categoryId/subcategoryId filtrelerini kaldır
+        var sanitized = Utils.CloneWithoutKeys(request, new[] { "categoryId", "subcategoryId" });
+
+        // 5) Mapping (default) — builder normal diğer filtreleri uygulasın
+        var mappings = ProductGridFilterConfig.GetColumnMappings();
+
+        // 6) Build + dil paramı
+        var (sql, builtParams) = GridQueryBuilder.Build(
+            baseSql,
+            sanitized,
+            mappings,
+            ProductGridFilterConfig.GetDefaultOrder(),
+            ProductGridFilterConfig.GetLikeFilterKeys(),
+            ProductGridFilterConfig.GetSearchColumns(),
+            DbManager.Dialect
+        );
+
+        // Dil
+        var languageCode = _httpContextAccessor.HttpContext?
+                               .Request.Headers["Accept-Language"].ToString()?
+                               .Split(',').FirstOrDefault()?.ToLower() ?? "en";
+
+        // 7) Parametreleri birleştir
+        builtParams["@lang"] = languageCode;
+        foreach (var kv in parameters) builtParams[kv.Key] = kv.Value;
+
+        // 8) Çalıştır
+        var data = await DbManager.ReadAsync<ProductLocalizedJoinEntity>(sql, builtParams);
         var countSql = DbManager.Dialect.CountWrap(DbManager.Dialect.StripOrderBy(sql));
-        var count = (await DbManager.ReadAsync<DataCountEntity>(countSql, parameters)).FirstOrDefault();
+        var count = (await DbManager.ReadAsync<DataCountEntity>(countSql, builtParams)).FirstOrDefault();
         return (data, count?.Count ?? 0);
+
+        // --- local helpers ---
+        static List<Guid> ParseGuids(string? raw)
+        {
+            var list = new List<Guid>();
+            if (string.IsNullOrWhiteSpace(raw)) return list;
+
+            // CSV destekli: "id1,id2"
+            foreach (var s in raw.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                if (Guid.TryParse(s, out var g)) list.Add(g);
+            return list;
+        }
+
+       
     }
 
     public async Task<Guid> AddProductImageAsync(Guid productId, string imageUrl, string? altText, int? sortOrder, bool isPrimary)
@@ -192,7 +288,7 @@ public class ProductRepository : Repository<ProductEntity, Guid>, IProductReposi
                                    )
                                    SELECT id FROM ins UNION SELECT id FROM sys.product_attributes WHERE code = @code LIMIT 1";
 
-        var attributeId = await DbManager.ExecuteScalarAsync<Guid>(attrSql, new Dictionary<string, object> {{"@code", attributeCode}});
+        var attributeId = await DbManager.ExecuteScalarAsync<Guid>(attrSql, new Dictionary<string, object> { { "@code", attributeCode } });
 
         const string valueSql = @"INSERT INTO sys.product_variant_attribute_values (variant_id, attribute_id, value_text)
                                    VALUES (@vid, @aid, @val)
@@ -218,7 +314,7 @@ public class ProductRepository : Repository<ProductEntity, Guid>, IProductReposi
                          FROM sys.product_variants v
                          WHERE v.product_id = @productId";
 
-        var (sql, parameters) = GridQueryBuilder.Build(baseSql, request, ProductVariantGridConfig.GetColumnMappings(), ProductVariantGridConfig.GetDefaultOrder(), ProductVariantGridConfig.GetLikeFilterKeys(), ProductVariantGridConfig.GetSearchColumns());
+        var (sql, parameters) = GridQueryBuilder.Build(baseSql, request, ProductVariantGridConfig.GetColumnMappings(), ProductVariantGridConfig.GetDefaultOrder(), ProductVariantGridConfig.GetLikeFilterKeys(), ProductVariantGridConfig.GetSearchColumns(), DbManager.Dialect);
         parameters["@productId"] = productId;
 
         var data = await DbManager.ReadAsync<ProductVariantEntity>(sql, parameters);
