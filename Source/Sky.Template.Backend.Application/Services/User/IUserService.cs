@@ -1,4 +1,9 @@
+using Sky.Template.Backend.Core.Aspects.Autofac.Validation;
+using Sky.Template.Backend.Core.Aspects.Autofac.Caching;
+
 using Azure.Storage.Blobs;
+using Sky.Template.Backend.Core.CrossCuttingConcerns.Caching;
+
 using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
 using Sky.Template.Backend.Core.BaseResponse;
@@ -26,6 +31,30 @@ public interface IUserService
     Task<BaseControllerResponse<SingleUserResponse>> GetUserDtoByEmailOrThrowAsync(string email);
 
     Task<BaseControllerResponse<SingleUserResponse>> UpdateUserAsync(UpdateUserRequest request);
+    [Cacheable(CacheKeyPrefix = nameof(CacheKeys.SelfProfilePrefix), ExpirationInMinutes = 5)]
+    Task<BaseControllerResponse<SelfProfileResponse>> GetSelfProfileAsync(Guid userId);
+
+    [ValidationAspect(typeof(SelfUpdateProfileRequestValidator))]
+    [CacheRemove(nameof(CacheKeys.SelfProfilePattern))]
+    Task<BaseControllerResponse<SingleUserResponse>> UpdateSelfProfileAsync(Guid userId, SelfUpdateProfileRequest request);
+
+    [Cacheable(CacheKeyPrefix = nameof(CacheKeys.SelfPermissionsPrefix), ExpirationInMinutes = 5)]
+    Task<BaseControllerResponse<List<string>>> GetSelfPermissionsAsync(Guid userId);
+
+    Task<BaseControllerResponse<List<UserAddressDto>>> GetSelfAddressesAsync(Guid userId);
+    Task<BaseControllerResponse<List<UserSessionDto>>> GetSelfSessionsAsync(Guid userId);
+
+    [CacheRemove(nameof(CacheKeys.SelfProfilePattern))]
+    Task<BaseControllerResponse<bool>> RevokeSelfSessionAsync(Guid userId, Guid sessionId);
+
+    [ValidationAspect(typeof(NotificationSettingsValidator))]
+    [CacheRemove(nameof(CacheKeys.SelfProfilePattern))]
+    Task<BaseControllerResponse<bool>> UpdateSelfNotificationsAsync(Guid userId, NotificationSettingsDto request);
+
+    [ValidationAspect(typeof(UserPreferencesValidator))]
+    [CacheRemove(nameof(CacheKeys.SelfProfilePattern))]
+    Task<BaseControllerResponse<bool>> UpdateSelfPreferencesAsync(Guid userId, UserPreferencesDto request);
+
 }
 
 public class UserService : IUserService
@@ -157,6 +186,66 @@ public class UserService : IUserService
         if (response?.Data?.User is null)
             throw new NotFoundException("UserNotFoundWithEmail", email);
         return response;
+    }
+
+    public async Task<BaseControllerResponse<SelfProfileResponse>> GetSelfProfileAsync(Guid userId)
+    {
+        var profile = await _userRepository.GetSelfProfileAsync(userId) ?? new SelfProfileResponse();
+        return ControllerResponseBuilder.Success(profile);
+    }
+
+    public async Task<BaseControllerResponse<SingleUserResponse>> UpdateSelfProfileAsync(Guid userId, SelfUpdateProfileRequest request)
+    {
+        var entity = await _userRepository.UpdateSelfProfileAsync(userId, request);
+        var dto = new SingleUserResponse
+        {
+            User = new UserWithRoleDto
+            {
+                Id = entity?.Id ?? userId,
+                FirstName = entity?.FirstName ?? request.FirstName,
+                LastName = entity?.LastName ?? request.LastName,
+                Email = entity?.Email ?? string.Empty,
+                UserImagePath = entity?.ImagePath,
+                Role = new Role()
+            }
+        };
+        return ControllerResponseBuilder.Success(dto);
+    }
+
+    public async Task<BaseControllerResponse<List<string>>> GetSelfPermissionsAsync(Guid userId)
+    {
+        var list = (await _userRepository.GetSelfPermissionCodesAsync(userId))?.ToList() ?? new List<string>();
+        return ControllerResponseBuilder.Success(list);
+    }
+
+    public async Task<BaseControllerResponse<List<UserAddressDto>>> GetSelfAddressesAsync(Guid userId)
+    {
+        var list = (await _userRepository.GetSelfAddressesAsync(userId))?.ToList() ?? new List<UserAddressDto>();
+        return ControllerResponseBuilder.Success(list);
+    }
+
+    public async Task<BaseControllerResponse<List<UserSessionDto>>> GetSelfSessionsAsync(Guid userId)
+    {
+        var list = (await _userRepository.GetSelfSessionsAsync(userId))?.ToList() ?? new List<UserSessionDto>();
+        return ControllerResponseBuilder.Success(list);
+    }
+
+    public async Task<BaseControllerResponse<bool>> RevokeSelfSessionAsync(Guid userId, Guid sessionId)
+    {
+        var result = await _userRepository.RevokeSelfSessionAsync(userId, sessionId);
+        return ControllerResponseBuilder.Success(result);
+    }
+
+    public async Task<BaseControllerResponse<bool>> UpdateSelfNotificationsAsync(Guid userId, NotificationSettingsDto request)
+    {
+        var result = await _userRepository.UpdateSelfNotificationsAsync(userId, request);
+        return ControllerResponseBuilder.Success(result);
+    }
+
+    public async Task<BaseControllerResponse<bool>> UpdateSelfPreferencesAsync(Guid userId, UserPreferencesDto request)
+    {
+        var result = await _userRepository.UpdateSelfPreferencesAsync(userId, request);
+        return ControllerResponseBuilder.Success(result);
     }
 
     public async Task<BaseControllerResponse<SingleUserResponse>> UpdateUserAsync(UpdateUserRequest request)
