@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Sky.Template.Backend.Core.Attributes;
-using Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository.Sql;
+using Sky.Template.Backend.Core.Utilities;
 
 namespace Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository.QueryBuilder;
 

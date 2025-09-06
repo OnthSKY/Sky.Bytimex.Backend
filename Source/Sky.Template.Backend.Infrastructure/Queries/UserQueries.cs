@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Razor.Language.Intermediate;
+
 namespace Sky.Template.Backend.Infrastructure.Queries;
 
 public class UserQueries

@@ -25,7 +25,8 @@ public class DiscountRepository : Repository<DiscountEntity, Guid>, IDiscountRep
             columnMappings: DiscountGridFilterConfig.GetColumnMappings(),
             defaultOrderBy: DiscountGridFilterConfig.GetDefaultOrder(),
             likeFilterKeys: DiscountGridFilterConfig.GetLikeFilterKeys(),
-            searchColumns: DiscountGridFilterConfig.GetSearchColumns()
+            searchColumns: DiscountGridFilterConfig.GetSearchColumns(),
+            DbManager.Dialect
         );
 
         var data = await DbManager.ReadAsync<DiscountEntity>(sql, parameters, GlobalSchema.Name);

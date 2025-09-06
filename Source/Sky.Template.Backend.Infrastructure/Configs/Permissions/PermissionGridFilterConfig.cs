@@ -1,12 +1,16 @@
+using System;
+using System.Collections.Generic;
+using Sky.Template.Backend.Core.Utilities;
+
 namespace Sky.Template.Backend.Infrastructure.Configs.Permissions;
 
 public static class PermissionGridFilterConfig
 {
-    public static Dictionary<string, string> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
+    public static Dictionary<string, ColumnMapping> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
     {
-        { "name", "p.name" },
-        { "description", "p.description" },
-        { "createdAt", "p.created_at" }
+        { "name",        new ColumnMapping("p.name",        typeof(string)) },
+        { "description", new ColumnMapping("p.description", typeof(string)) },
+        { "createdAt",   new ColumnMapping("p.created_at",  typeof(DateTime)) }
     };
 
     public static HashSet<string> GetLikeFilterKeys() => new(StringComparer.OrdinalIgnoreCase)
@@ -22,4 +26,4 @@ public static class PermissionGridFilterConfig
     };
 
     public static string GetDefaultOrder() => "p.created_at DESC";
-} 
+}

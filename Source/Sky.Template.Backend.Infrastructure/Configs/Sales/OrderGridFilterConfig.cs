@@ -1,23 +1,27 @@
+using System;
+using System.Collections.Generic;
+using Sky.Template.Backend.Core.Utilities;
+
 namespace Sky.Template.Backend.Infrastructure.Configs.Sales;
 
 public static class OrderGridFilterConfig
 {
-    public static Dictionary<string, string> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
+    public static Dictionary<string, ColumnMapping> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
     {
-        { "vendorId", "s.vendor_id" },
-        { "buyerId", "s.buyer_id" },
-        { "saleStatus", "s.order_status" },
-        { "currency", "s.currency" },
-        { "minAmount", "s.total_amount >= @minAmount" },
-        { "maxAmount", "s.total_amount <= @maxAmount" },
-        { "startDate", "s.order_date >= @startDate" },
-        { "endDate", "s.order_date <= @endDate" },
-        { "createdAt", "s.created_at" }
+        { "vendorId",   new ColumnMapping("s.vendor_id",        typeof(Guid)) },
+        { "buyerId",    new ColumnMapping("s.buyer_id",         typeof(Guid)) },
+        { "saleStatus", new ColumnMapping("s.order_status",     typeof(string)) },
+        { "currency",   new ColumnMapping("s.currency",         typeof(string)) },
+        { "minAmount",  new ColumnMapping("s.total_amount >= @minAmount", typeof(decimal)) },
+        { "maxAmount",  new ColumnMapping("s.total_amount <= @maxAmount", typeof(decimal)) },
+        { "startDate",  new ColumnMapping("s.order_date >= @startDate",   typeof(DateTime)) },
+        { "endDate",    new ColumnMapping("s.order_date <= @endDate",     typeof(DateTime)) },
+        { "createdAt",  new ColumnMapping("s.created_at",       typeof(DateTime)) }
     };
 
     public static HashSet<string> GetLikeFilterKeys() => new(StringComparer.OrdinalIgnoreCase)
     {
-        // örnek: "saleStatus"
+        // örnek: "saleStatus" (istenirse LIKE ile aranabilir)
     };
 
     public static List<string> GetSearchColumns() => new()
@@ -27,4 +31,4 @@ public static class OrderGridFilterConfig
     };
 
     public static string GetDefaultOrder() => "s.created_at DESC";
-} 
+}

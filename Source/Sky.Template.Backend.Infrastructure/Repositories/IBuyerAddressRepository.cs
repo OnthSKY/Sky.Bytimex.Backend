@@ -1,3 +1,4 @@
+using Sky.Template.Backend.Core.Utilities;
 using Sky.Template.Backend.Infrastructure.Entities;
 using Sky.Template.Backend.Infrastructure.Entities.Sales;
 using Sky.Template.Backend.Infrastructure.Repositories.Base;
@@ -17,17 +18,18 @@ public class BuyerAddressRepository : Repository<BuyerAddressEntity, Guid>, IBuy
     public BuyerAddressRepository() : base(new GridQueryConfig<BuyerAddressEntity>
     {
         BaseSql = "SELECT * FROM sys.buyer_addresses WHERE is_deleted = FALSE",
-        ColumnMappings = new Dictionary<string, string>
+        ColumnMappings = new Dictionary<string, ColumnMapping>
         {
-            { "city", "city" },
-            { "country", "country" },
-            { "postal_code", "postal_code" }
+            { "city",        new ColumnMapping("city",        typeof(string)) },
+            { "country",     new ColumnMapping("country",     typeof(string)) },
+            { "postal_code", new ColumnMapping("postal_code", typeof(string)) }
         },
         LikeFilterKeys = new HashSet<string> { "city", "country", "postal_code" },
         SearchColumns = new List<string> { "city", "country", "postal_code" },
         DefaultOrderBy = "created_at DESC"
     })
     { }
+
 
     public async Task<IEnumerable<BuyerAddressEntity>> GetByBuyerIdAsync(Guid buyerId)
     {

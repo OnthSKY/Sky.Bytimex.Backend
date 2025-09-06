@@ -45,13 +45,14 @@ public class RoleRepository : Repository<RoleEntity, int>, IRoleRepository
 
     public async Task<(IEnumerable<BaseUserEntity>, int TotalCount)> GetFilteredPaginatedUsersByRoleId(GetUsersByRoleRequest request)
     {
-        var columnMappingsForFilters = new Dictionary<string, string>()
+        var columnMappingsForFilters = new Dictionary<string, ColumnMapping>(StringComparer.OrdinalIgnoreCase)
         {
-            {"userId", "u.id"},
-            {"firstName", "u.first_name"},
-            {"lastName", "u.last_name"},
-            {"email", "u.email"},
+            { "userId",    new ColumnMapping("u.id",         typeof(Guid)) },
+            { "firstName", new ColumnMapping("u.first_name", typeof(string)) },
+            { "lastName",  new ColumnMapping("u.last_name",  typeof(string)) },
+            { "email",     new ColumnMapping("u.email",      typeof(string)) }
         };
+
 
         var (sql, parameters) = GridQueryBuilder.Build(
             baseSql: RoleQueries.GetFilteredPaginatedUsersByRoleId,
@@ -59,7 +60,8 @@ public class RoleRepository : Repository<RoleEntity, int>, IRoleRepository
             columnMappings: columnMappingsForFilters,
             defaultOrderBy: "u.first_name ASC",
             likeFilterKeys: new HashSet<string> { "firstName", "lastName", "email" },
-            searchColumns: new List<string> { "u.first_name", "u.last_name", "u.email" }
+            searchColumns: new List<string> { "u.first_name", "u.last_name", "u.email" },
+            DbManager.Dialect
         );
 
         var data = await DbManager.ReadAsync<BaseUserEntity>(sql, parameters, GlobalSchema.Name);
@@ -105,7 +107,8 @@ public class RoleRepository : Repository<RoleEntity, int>, IRoleRepository
             columnMappings: RoleGridFilterConfig.GetColumnMappings(),
             defaultOrderBy: RoleGridFilterConfig.GetDefaultOrder(),
             likeFilterKeys: RoleGridFilterConfig.GetLikeFilterKeys(),
-            searchColumns: RoleGridFilterConfig.GetSearchColumns()
+            searchColumns: RoleGridFilterConfig.GetSearchColumns(),
+            DbManager.Dialect
         );
 
         var data = await DbManager.ReadAsync<RoleEntity>(sql, parameters, GlobalSchema.Name);

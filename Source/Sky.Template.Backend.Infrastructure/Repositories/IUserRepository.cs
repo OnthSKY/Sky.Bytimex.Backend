@@ -90,7 +90,8 @@ public class UserRepository : Repository<UserEntity, Guid>, IUserRepository
             columnMappings: UserGridFilterConfig.GetColumnMappings(),
             defaultOrderBy: UserGridFilterConfig.GetDefaultOrder(),
             likeFilterKeys: UserGridFilterConfig.GetLikeFilterKeys(),
-            searchColumns: UserGridFilterConfig.GetSearchColumns()
+            searchColumns: UserGridFilterConfig.GetSearchColumns(),
+            DbManager.Dialect
         );
         var data = await DbManager.ReadAsync<UserWithRoleEntity>(sql, parameters, GlobalSchema.Name);
         var countSql = DbManager.Dialect.CountWrap(DbManager.Dialect.StripOrderBy(sql));

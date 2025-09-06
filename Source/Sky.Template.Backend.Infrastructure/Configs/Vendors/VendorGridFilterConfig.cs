@@ -1,14 +1,18 @@
+using System;
+using System.Collections.Generic;
+using Sky.Template.Backend.Core.Utilities;
+
 namespace Sky.Template.Backend.Infrastructure.Configs.Vendors;
 
 public static class VendorGridFilterConfig
 {
-    public static Dictionary<string, string> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
+    public static Dictionary<string, ColumnMapping> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
     {
-        { "name", "v.name" },
-        { "email", "v.email" },
-        { "phone", "v.phone" },
-        { "status", "v.status" },
-        { "createdAt", "v.created_at" }
+        { "name",      new ColumnMapping("v.name",      typeof(string)) },
+        { "email",     new ColumnMapping("v.email",     typeof(string)) },
+        { "phone",     new ColumnMapping("v.phone",     typeof(string)) },
+        { "status",    new ColumnMapping("v.status",    typeof(string)) },
+        { "createdAt", new ColumnMapping("v.created_at",typeof(DateTime)) }
     };
 
     public static HashSet<string> GetLikeFilterKeys() => new(StringComparer.OrdinalIgnoreCase)

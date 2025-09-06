@@ -1,3 +1,4 @@
+using Sky.Template.Backend.Core.Utilities;
 using Sky.Template.Backend.Infrastructure.Entities.Sales;
 using Sky.Template.Backend.Infrastructure.Repositories.DbManagerRepository;
 using Sky.Template.Backend.Infrastructure.Entities;
@@ -18,18 +19,19 @@ public class BuyerRepository : Repository<BuyerEntity, Guid>, IBuyerRepository
     public BuyerRepository() : base(new GridQueryConfig<BuyerEntity>
     {
         BaseSql = "SELECT * FROM sys.buyers WHERE is_deleted = FALSE",
-        ColumnMappings = new Dictionary<string, string>
+        ColumnMappings = new Dictionary<string, ColumnMapping>
         {
-            { "name", "name" },
-            { "surname", "surname" },
-            { "email", "email" },
-            { "phone", "phone" }
+            { "name",    new ColumnMapping("name",    typeof(string)) },
+            { "surname", new ColumnMapping("surname", typeof(string)) },
+            { "email",   new ColumnMapping("email",   typeof(string)) },
+            { "phone",   new ColumnMapping("phone",   typeof(string)) }
         },
         LikeFilterKeys = new HashSet<string> { "name", "surname", "email", "phone" },
         SearchColumns = new List<string> { "name", "surname", "email", "phone" },
         DefaultOrderBy = "created_at DESC"
     })
     { }
+
     public async Task<BuyerEntity?> GetBuyerByEmailAsync(string email)
     {
         var query = "SELECT * FROM sys.buyers WHERE email = @email AND is_deleted = FALSE";

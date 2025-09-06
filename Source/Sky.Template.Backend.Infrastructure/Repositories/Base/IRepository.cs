@@ -9,7 +9,7 @@ using System.Reflection;
 namespace Sky.Template.Backend.Infrastructure.Repositories.Base;
 public class GridQueryConfig<T>
 {
-    public Dictionary<string, string> ColumnMappings { get; set; } = new();
+    public Dictionary<string, ColumnMapping> ColumnMappings { get; set; } = new();
     public HashSet<string>? LikeFilterKeys { get; set; }
     public List<string>? SearchColumns { get; set; }
     public string DefaultOrderBy { get; set; } = "created_at DESC";
@@ -65,7 +65,8 @@ public class Repository<T, TId> : IRepository<T, TId> where T : BaseEntity<TId>,
             columnMappings: _gridQueryConfig.ColumnMappings,
             defaultOrderBy: _gridQueryConfig.DefaultOrderBy,
             likeFilterKeys: _gridQueryConfig.LikeFilterKeys,
-            searchColumns: _gridQueryConfig.SearchColumns
+            searchColumns: _gridQueryConfig.SearchColumns,
+            dialect: DbManager.Dialect                    
         );
 
         var data = await DbManager.ReadAsync<T>(sql, parameters, _schemaName);

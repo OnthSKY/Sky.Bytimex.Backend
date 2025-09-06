@@ -29,7 +29,8 @@ public class VendorRepository : Repository<VendorEntity, Guid>, IVendorRepositor
             columnMappings: VendorGridFilterConfig.GetColumnMappings(),
             defaultOrderBy: VendorGridFilterConfig.GetDefaultOrder(),
             likeFilterKeys: VendorGridFilterConfig.GetLikeFilterKeys(),
-            searchColumns: VendorGridFilterConfig.GetSearchColumns()
+            searchColumns: VendorGridFilterConfig.GetSearchColumns(),
+            DbManager.Dialect
         );
 
         var data = await DbManager.ReadAsync<VendorEntity>(sql, parameters, GlobalSchema.Name);

@@ -27,7 +27,8 @@ public class OrderRepository : Repository<OrderEntity, Guid>, IOrderRepository
             columnMappings: OrderGridFilterConfig.GetColumnMappings(),
             defaultOrderBy: OrderGridFilterConfig.GetDefaultOrder(),
             likeFilterKeys: OrderGridFilterConfig.GetLikeFilterKeys(),
-            searchColumns: OrderGridFilterConfig.GetSearchColumns()
+            searchColumns: OrderGridFilterConfig.GetSearchColumns(),
+            DbManager.Dialect
         );
 
         var data = await DbManager.ReadAsync<OrderEntity>(sql, parameters, GlobalSchema.Name);

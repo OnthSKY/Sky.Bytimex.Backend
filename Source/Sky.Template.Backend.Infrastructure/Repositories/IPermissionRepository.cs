@@ -1,4 +1,5 @@
 using Sky.Template.Backend.Core.Requests.Base;
+using Sky.Template.Backend.Core.Utilities;
 using Sky.Template.Backend.Infrastructure.Entities.System;
 using Sky.Template.Backend.Infrastructure.Repositories.Base;
 
@@ -14,10 +15,10 @@ public class PermissionRepository : Repository<PermissionEntity, int>, IPermissi
     public PermissionRepository() : base(new GridQueryConfig<PermissionEntity>
     {
         BaseSql = "SELECT * FROM sys.permissions WHERE is_deleted = FALSE",
-        ColumnMappings = new Dictionary<string, string>
+        ColumnMappings = new Dictionary<string, ColumnMapping>
         {
-            { "name", "name" },
-            { "description", "description" }
+            { "name",        new ColumnMapping("name",        typeof(string)) },
+            { "description", new ColumnMapping("description", typeof(string)) }
         },
         LikeFilterKeys = new HashSet<string> { "name", "description" },
         SearchColumns = new List<string> { "name", "description" },

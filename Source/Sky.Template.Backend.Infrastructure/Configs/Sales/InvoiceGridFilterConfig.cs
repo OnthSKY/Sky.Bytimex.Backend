@@ -1,17 +1,18 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using Sky.Template.Backend.Core.Utilities;
 
 namespace Sky.Template.Backend.Infrastructure.Configs.Sales;
 
 public static class InvoiceGridFilterConfig
 {
-    public static Dictionary<string, string> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
+    public static Dictionary<string, ColumnMapping> GetColumnMappings() => new(StringComparer.OrdinalIgnoreCase)
     {
-        {"buyerId", "i.buyer_id"},
-        {"status", "i.status"},
-        {"startDate", "i.invoice_date >= @startDate"},
-        {"endDate", "i.invoice_date <= @endDate"},
-        {"createdAt", "i.created_at"}
+        { "buyerId",   new ColumnMapping("i.buyer_id",                typeof(Guid)) },
+        { "status",    new ColumnMapping("i.status",                  typeof(string)) },
+        { "startDate", new ColumnMapping("i.invoice_date >= @startDate", typeof(DateTime)) },
+        { "endDate",   new ColumnMapping("i.invoice_date <= @endDate",   typeof(DateTime)) },
+        { "createdAt", new ColumnMapping("i.created_at",              typeof(DateTime)) }
     };
 
     public static HashSet<string> GetLikeFilterKeys() => new(StringComparer.OrdinalIgnoreCase)
