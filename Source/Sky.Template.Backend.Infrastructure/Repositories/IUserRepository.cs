@@ -1,3 +1,5 @@
+using Sky.Template.Backend.Contract.Responses.UserResponses;
+
 using Sky.Template.Backend.Contract.Requests.Users;
 using Sky.Template.Backend.Core.Context;
 using Sky.Template.Backend.Core.Utilities;
@@ -28,6 +30,15 @@ public interface IUserRepository : IRepository<UserEntity, Guid>
     Task<bool> UpdateUserImageFromAzureLoginAsync(string imagePath, string userId, string schemaName);
     Task<UserEntity?> UpdateUserAsync(UserEntity user);
     Task<bool> SoftDeleteUserAsync(Guid id, string reason);
+    Task<SelfProfileResponse?> GetSelfProfileAsync(Guid userId);
+    Task<IEnumerable<string>> GetSelfPermissionCodesAsync(Guid userId);
+    Task<IEnumerable<UserAddressDto>> GetSelfAddressesAsync(Guid userId);
+    Task<IEnumerable<UserSessionDto>> GetSelfSessionsAsync(Guid userId);
+    Task<bool> RevokeSelfSessionAsync(Guid userId, Guid sessionId);
+    Task<bool> UpdateSelfNotificationsAsync(Guid userId, NotificationSettingsDto request);
+    Task<bool> UpdateSelfPreferencesAsync(Guid userId, UserPreferencesDto request);
+    Task<UserEntity?> UpdateSelfProfileAsync(Guid userId, SelfUpdateProfileRequest request);
+
     #endregion
 }
 
@@ -128,4 +139,27 @@ public class UserRepository : Repository<UserEntity, Guid>, IUserRepository
         var affected = await DbManager.ExecuteNonQueryAsync(UserQueries.SoftDeleteUser, parameters, GlobalSchema.Name);
         return affected;
     }
+    public Task<SelfProfileResponse?> GetSelfProfileAsync(Guid userId)
+        => Task.FromResult<SelfProfileResponse?>(null);
+
+    public Task<IEnumerable<string>> GetSelfPermissionCodesAsync(Guid userId)
+        => Task.FromResult<IEnumerable<string>>(Array.Empty<string>());
+
+    public Task<IEnumerable<UserAddressDto>> GetSelfAddressesAsync(Guid userId)
+        => Task.FromResult<IEnumerable<UserAddressDto>>(Array.Empty<UserAddressDto>());
+
+    public Task<IEnumerable<UserSessionDto>> GetSelfSessionsAsync(Guid userId)
+        => Task.FromResult<IEnumerable<UserSessionDto>>(Array.Empty<UserSessionDto>());
+
+    public Task<bool> RevokeSelfSessionAsync(Guid userId, Guid sessionId)
+        => Task.FromResult(false);
+
+    public Task<bool> UpdateSelfNotificationsAsync(Guid userId, NotificationSettingsDto request)
+        => Task.FromResult(true);
+
+    public Task<bool> UpdateSelfPreferencesAsync(Guid userId, UserPreferencesDto request)
+        => Task.FromResult(true);
+
+    public Task<UserEntity?> UpdateSelfProfileAsync(Guid userId, SelfUpdateProfileRequest request)
+        => Task.FromResult<UserEntity?>(null);
 }
