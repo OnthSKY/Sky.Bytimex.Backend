@@ -68,16 +68,6 @@ public class ProductRepository : Repository<ProductEntity, Guid>, IProductReposi
     public async Task<(IEnumerable<ProductLocalizedJoinEntity>, int TotalCount)> GetLocalizedProductsAsync(
     ProductFilterRequest request, bool onlyActive = false)
     {
-        var (sql, builtParams) = BuildLocalizedProductsSql(request, onlyActive);
-        var data = await DbManager.ReadAsync<ProductLocalizedJoinEntity>(sql, builtParams /*, GlobalSchema.Name*/);
-        var countSql = DbManager.Dialect.CountWrap(DbManager.Dialect.StripOrderBy(sql));
-        var count = (await DbManager.ReadAsync<DataCountEntity>(countSql, builtParams /*, GlobalSchema.Name*/))
-                    .FirstOrDefault()?.Count ?? 0;
-        return (data, count);
-    }
-
-    internal (string Sql, Dictionary<string, object> Params) BuildLocalizedProductsSql(ProductFilterRequest request, bool onlyActive)
-    {
         // 0) Dil paramı (Accept-Language -> "tr", "en" ... )
         var languageCode = (_httpContextAccessor.HttpContext?
             .Request.Headers["Accept-Language"].ToString() ?? "en")
@@ -89,7 +79,7 @@ public class ProductRepository : Repository<ProductEntity, Guid>, IProductReposi
         var baseSql = ProductQueries.GetLocalizedProductsAsync + (onlyActive ? " AND p.status = 'ACTIVE'" : "");
 
         // 2) Filtrelerden kategori/subcategory oku (Guid/CSV destekli)
-        request.Filters ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        request.Filters ??= new Dictionary<string, string>();
         request.Filters.TryGetValue("categoryId", out var catRaw);
         request.Filters.TryGetValue("subcategoryId", out var subRaw);
 
@@ -98,15 +88,6 @@ public class ProductRepository : Repository<ProductEntity, Guid>, IProductReposi
 
         var hasCategory = !string.IsNullOrWhiteSpace(catRaw);
         var hasSubCat = !string.IsNullOrWhiteSpace(subRaw);
-
-        // vendor slug join
-        var hasVendorSlug = request.Filters.TryGetValue("vendor_slug", out var vendorSlug) && !string.IsNullOrWhiteSpace(vendorSlug);
-        if (hasVendorSlug)
-        {
-            request.Filters["vendor_slug"] = vendorSlug!.ToLowerInvariant();
-            baseSql = baseSql.Replace("FROM sys.products p", "FROM sys.products p JOIN sys.vendors v ON v.id = p.vendor_id");
-            baseSql += " AND v.status = 'ACTIVE'";
-        }
 
         // 3) CTE ve WHERE (gerekiyorsa) + paramlar
         var cteParams = new Dictionary<string, object>();
@@ -130,6 +111,7 @@ subcats AS (
 {baseSql}
   AND p.category_id IN (SELECT id FROM subcats)
 ";
+            // Parametreleri her koşulda bağla (boş dizi bile olsa)
             cteParams["@categoryIds"] = catIds.Count > 0 ? catIds.ToArray() : Array.Empty<Guid>();
             cteParams["@subcategoryIds"] = subIds.Count > 0 ? subIds.ToArray() : Array.Empty<Guid>();
         }
@@ -153,8 +135,16 @@ subcats AS (
         builtParams["@lang"] = languageCode;
         foreach (var kv in cteParams) builtParams[kv.Key] = kv.Value;
 
-        return (sql, builtParams);
+        // 7) Çalıştır (şema gerekiyorsa üçüncü argümanla ver)
+        var data = await DbManager.ReadAsync<ProductLocalizedJoinEntity>(sql, builtParams /*, GlobalSchema.Name*/);
 
+        var countSql = DbManager.Dialect.CountWrap(DbManager.Dialect.StripOrderBy(sql));
+        var count = (await DbManager.ReadAsync<DataCountEntity>(countSql, builtParams /*, GlobalSchema.Name*/))
+                    .FirstOrDefault()?.Count ?? 0;
+
+        return (data, count);
+
+        // --- local helpers ---
         static List<Guid> ParseGuids(string? raw)
         {
             var list = new List<Guid>();
