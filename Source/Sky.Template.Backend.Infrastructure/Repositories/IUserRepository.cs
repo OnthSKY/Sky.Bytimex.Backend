@@ -1,5 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
 using Sky.Template.Backend.Contract.Responses.UserResponses;
-
 using Sky.Template.Backend.Contract.Requests.Users;
 using Sky.Template.Backend.Core.Context;
 using Sky.Template.Backend.Core.Utilities;
@@ -139,27 +140,78 @@ public class UserRepository : Repository<UserEntity, Guid>, IUserRepository
         var affected = await DbManager.ExecuteNonQueryAsync(UserQueries.SoftDeleteUser, parameters, GlobalSchema.Name);
         return affected;
     }
-    public Task<SelfProfileResponse?> GetSelfProfileAsync(Guid userId)
-        => Task.FromResult<SelfProfileResponse?>(null);
+     public async Task<SelfProfileResponse?> GetSelfProfileAsync(Guid userId)
+    {
+        var parameters = new Dictionary<string, object> { { "@userId", userId } };
+        var result = await DbManager.ReadAsync<SelfProfileResponse>(SelfUserQueries.GetSelfProfile, parameters, GlobalSchema.Name);
+        return result.FirstOrDefault();
+    }
 
-    public Task<IEnumerable<string>> GetSelfPermissionCodesAsync(Guid userId)
-        => Task.FromResult<IEnumerable<string>>(Array.Empty<string>());
+    public async Task<IEnumerable<string>> GetSelfPermissionCodesAsync(Guid userId)
+    {
+        var parameters = new Dictionary<string, object> { { "@userId", userId } };
+        return await DbManager.ReadAsync<string>(SelfUserQueries.GetSelfPermissionCodes, parameters, GlobalSchema.Name) ?? Enumerable.Empty<string>();
+    }
 
-    public Task<IEnumerable<UserAddressDto>> GetSelfAddressesAsync(Guid userId)
-        => Task.FromResult<IEnumerable<UserAddressDto>>(Array.Empty<UserAddressDto>());
+    public async Task<IEnumerable<UserAddressDto>> GetSelfAddressesAsync(Guid userId)
+    {
+        var parameters = new Dictionary<string, object> { { "@userId", userId } };
+        return await DbManager.ReadAsync<UserAddressDto>(SelfUserQueries.GetSelfAddresses, parameters, GlobalSchema.Name) ?? Enumerable.Empty<UserAddressDto>();
+    }
 
-    public Task<IEnumerable<UserSessionDto>> GetSelfSessionsAsync(Guid userId)
-        => Task.FromResult<IEnumerable<UserSessionDto>>(Array.Empty<UserSessionDto>());
+    public async Task<IEnumerable<UserSessionDto>> GetSelfSessionsAsync(Guid userId)
+    {
+        var parameters = new Dictionary<string, object> { { "@userId", userId } };
+        return await DbManager.ReadAsync<UserSessionDto>(SelfUserQueries.GetSelfSessions, parameters, GlobalSchema.Name) ?? Enumerable.Empty<UserSessionDto>();
+    }
 
-    public Task<bool> RevokeSelfSessionAsync(Guid userId, Guid sessionId)
-        => Task.FromResult(false);
+    public async Task<bool> RevokeSelfSessionAsync(Guid userId, Guid sessionId)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "@userId", userId },
+            { "@sessionId", sessionId }
+        };
+        return await DbManager.ExecuteNonQueryAsync(SelfUserQueries.RevokeSelfSession, parameters, GlobalSchema.Name);
+    }
 
-    public Task<bool> UpdateSelfNotificationsAsync(Guid userId, NotificationSettingsDto request)
-        => Task.FromResult(true);
+    public async Task<bool> UpdateSelfNotificationsAsync(Guid userId, NotificationSettingsDto request)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "@userId", userId },
+            { "@EmailNotifications", request.EmailNotifications },
+            { "@SmsNotifications", request.SmsNotifications },
+            { "@PushNotifications", request.PushNotifications },
+            { "@NewsletterOptIn", request.NewsletterOptIn }
+        };
+        return await DbManager.ExecuteNonQueryAsync(SelfUserQueries.UpsertSelfNotifications, parameters, GlobalSchema.Name);
+    }
 
-    public Task<bool> UpdateSelfPreferencesAsync(Guid userId, UserPreferencesDto request)
-        => Task.FromResult(true);
+    public async Task<bool> UpdateSelfPreferencesAsync(Guid userId, UserPreferencesDto request)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "@userId", userId },
+            { "@Language", request.Language },
+            { "@Currency", request.Currency },
+            { "@Theme", request.Theme },
+            { "@TimeZone", request.TimeZone }
+        };
+        return await DbManager.ExecuteNonQueryAsync(SelfUserQueries.UpsertSelfPreferences, parameters, GlobalSchema.Name);
+    }
 
-    public Task<UserEntity?> UpdateSelfProfileAsync(Guid userId, SelfUpdateProfileRequest request)
-        => Task.FromResult<UserEntity?>(null);
+    public async Task<UserEntity?> UpdateSelfProfileAsync(Guid userId, SelfUpdateProfileRequest request)
+    {
+        var parameters = new Dictionary<string, object>
+        {
+            { "@userId", userId },
+            { "@FirstName", request.FirstName },
+            { "@LastName", request.LastName },
+            { "@Phone", request.Phone }
+        };
+        var result = await DbManager.ReadAsync<UserEntity>(SelfUserQueries.UpdateSelfProfile, parameters, GlobalSchema.Name);
+        return result.FirstOrDefault();
+    }
+ 
 }
