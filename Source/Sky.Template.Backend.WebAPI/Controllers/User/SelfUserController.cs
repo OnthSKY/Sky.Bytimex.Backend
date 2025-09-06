@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sky.Template.Backend.Application.Services.User;
 using Sky.Template.Backend.Contract.Requests.AdminUsers;
@@ -7,7 +8,7 @@ using Sky.Template.Backend.Core.Extensions;
 namespace Sky.Template.Backend.WebAPI.Controllers.User;
 
 [ApiController]
-[Route("api/self")]
+[Route("api/users")]
 [ApiVersion("1.0")]
 public class SelfUserController : UserBaseController
 {
@@ -16,7 +17,6 @@ public class SelfUserController : UserBaseController
     {
         _userService = userService;
     }
-
     [HttpGet("v{version:apiVersion}/profile")]
     public async Task<IActionResult> Profile()
         => await HandleServiceResponseAsync(() => _userService.GetUserDtoByIdAsync(HttpContext.GetUserId()));

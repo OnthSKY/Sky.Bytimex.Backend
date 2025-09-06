@@ -57,7 +57,7 @@ public class UserProductService : IUserProductService
         return ControllerResponseBuilder.Success(response);
     }
 
-    [Cacheable(CacheKeyPrefix = nameof(CacheKeys.ProductsPrefix), ExpirationInMinutes = 60)]
+    //[Cacheable(CacheKeyPrefix = nameof(CacheKeys.ProductsPrefix), ExpirationInMinutes = 60)]
     [EnsureUserIsValid(new[] { "id" })]
     public async Task<BaseControllerResponse<SingleProductResponse>> GetProductByIdAsync(Guid id)
     {
