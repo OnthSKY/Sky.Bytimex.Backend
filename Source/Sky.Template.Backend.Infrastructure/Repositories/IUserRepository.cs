@@ -140,7 +140,7 @@ public class UserRepository : Repository<UserEntity, Guid>, IUserRepository
         var affected = await DbManager.ExecuteNonQueryAsync(UserQueries.SoftDeleteUser, parameters, GlobalSchema.Name);
         return affected;
     }
-    public async Task<SelfProfileResponse?> GetSelfProfileAsync(Guid userId)
+     public async Task<SelfProfileResponse?> GetSelfProfileAsync(Guid userId)
     {
         var parameters = new Dictionary<string, object> { { "@userId", userId } };
         var result = await DbManager.ReadAsync<SelfProfileResponse>(SelfUserQueries.GetSelfProfile, parameters, GlobalSchema.Name);
@@ -213,4 +213,5 @@ public class UserRepository : Repository<UserEntity, Guid>, IUserRepository
         var result = await DbManager.ReadAsync<UserEntity>(SelfUserQueries.UpdateSelfProfile, parameters, GlobalSchema.Name);
         return result.FirstOrDefault();
     }
+ 
 }
