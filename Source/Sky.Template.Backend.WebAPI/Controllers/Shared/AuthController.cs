@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Sky.Template.Backend.Application.Services;
+using Sky.Template.Backend.Application.Services.User;
 using Sky.Template.Backend.Contract.Requests.Auth;
 using Sky.Template.Backend.Core.BaseResponse;
 using Sky.Template.Backend.Core.Configs;
 using Sky.Template.Backend.Core.Exceptions;
 using Sky.Template.Backend.Core.Attributes;
+using Sky.Template.Backend.Core.Extensions;
 using Sky.Template.Backend.Core.Localization;
 using Sky.Template.Backend.WebAPI.Controllers.Base;
 
@@ -17,10 +19,12 @@ public class AuthController : CustomBaseController
 {
     private readonly ISharedAuthService _authService;
     private readonly TokenManagerConfig _tokenManagerConfig;
+    private readonly IUserService _userService;
 
-    public AuthController(ISharedAuthService authService, IOptions<TokenManagerConfig> tokenManagerConfig)
+    public AuthController(ISharedAuthService authService, IOptions<TokenManagerConfig> tokenManagerConfig, IUserService userService)
     {
         _authService = authService;
+        _userService = userService;
         _tokenManagerConfig = tokenManagerConfig.Value;
     }
 
@@ -126,6 +130,6 @@ public class AuthController : CustomBaseController
     [Authorize]
     public async Task<IActionResult> Me()
     {
-        return Ok();
-    }
+        return HandleResponseStatusCode(await _userService.GetUserDtoByIdOrThrowAsync(HttpContext.GetUserId()));
+     }
 }

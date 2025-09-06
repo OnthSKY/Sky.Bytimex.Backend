@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using Castle.DynamicProxy;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,54 +20,73 @@ public sealed class EnsureUserIsValidAttribute : MethodInterception
     {
         _fields = fields;
         _httpContextAccessor = ServiceTool.ServiceProvider.GetService<IHttpContextAccessor>()
-                              ?? throw new BusinessRulesException("HttpContextAccessorNotResolved");
+                               ?? throw new BusinessRulesException("HttpContextAccessorNotResolved");
 
-        var userServiceType = Type.GetType("Sky.Template.Backend.Application.Services.IUserService, Sky.Template.Backend.Application");
+        var userServiceType =
+            Type.GetType("Sky.Template.Backend.Application.Services.IUserService, Sky.Template.Backend.Application");
         if (userServiceType != null)
         {
             _userService = ServiceTool.ServiceProvider.GetService(userServiceType);
             _isActiveMethod = userServiceType.GetMethod("IsActive");
         }
     }
-
     protected override void OnBefore(IInvocation invocation)
     {
-        foreach (var argument in invocation.Arguments)
+        var paramInfos = invocation.Method.GetParameters();
+        var fieldSet = new HashSet<string>(_fields ?? Array.Empty<string>(), StringComparer.OrdinalIgnoreCase);
+
+        for (int i = 0; i < invocation.Arguments.Length; i++)
         {
+            var argument = invocation.Arguments[i];
             if (argument == null) continue;
 
             var argType = argument.GetType();
+            var paramName = paramInfos[i].Name ?? string.Empty;
 
-            foreach (var field in _fields)
+            // 1) Eğer bu parametrenin adı _fields içinde ise ve argüman primitive/Guid ise,
+            //    değeri doğrudan bu argümandan al.
+            if (fieldSet.Contains(paramName) && (argType.IsPrimitive || argType == typeof(Guid) || argType == typeof(string)))
             {
-                var property = argType.GetProperty(field);
+                ValidateValue(argument, paramName);
+                continue;
+            }
+
+            // 2) Değilse; fieldSet’teki her field’ı önce property olarak (case-insensitive) ara
+            foreach (var field in fieldSet)
+            {
+                var property = argType.GetProperty(field, BindingFlags.Instance | BindingFlags.Public | BindingFlags.IgnoreCase);
                 if (property == null)
                 {
-                    throw new BusinessRulesException("PropertyNotFoundInRequest", field);
+                    // Bu argüman içinde bulunamadı; diğer field/arg combo’larına bakmaya devam et
+                    continue;
                 }
 
                 var value = property.GetValue(argument);
-                if (value == null || value is Guid guid && guid == Guid.Empty)
-                {
-                    throw new BusinessRulesException("PropertyIsRequired", field);
-                }
-
-                if (_userService != null && _isActiveMethod != null && value is Guid userId)
-                {
-                    var result = _isActiveMethod.Invoke(_userService, new object[] { userId });
-                    bool isActive = result switch
-                    {
-                        bool b => b,
-                        Task<bool> task => task.ConfigureAwait(false).GetAwaiter().GetResult(),
-                        _ => true
-                    };
-
-                    if (!isActive)
-                    {
-                        throw new BusinessRulesException("UserIdNotActive", userId);
-                    }
-                }
+                ValidateValue(value, field);
             }
         }
     }
+
+    private void ValidateValue(object? value, string fieldOrParamName)
+    {
+        if (value == null)
+            throw new BusinessRulesException("PropertyIsRequired", fieldOrParamName);
+
+        if (value is Guid g && g == Guid.Empty)
+            throw new BusinessRulesException("PropertyIsRequired", fieldOrParamName);
+
+        if (_userService != null && _isActiveMethod != null && value is Guid userId)
+        {
+            var result = _isActiveMethod.Invoke(_userService, new object[] { userId });
+            bool isActive = result switch
+            {
+                bool b => b,
+                Task<bool> task => task.ConfigureAwait(false).GetAwaiter().GetResult(),
+                _ => true
+            };
+            if (!isActive)
+                throw new BusinessRulesException("UserIdNotActive", userId);
+        }
+    }
+
 }

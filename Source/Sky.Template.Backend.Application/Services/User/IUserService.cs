@@ -99,7 +99,7 @@ public class UserService : IUserService
         });
     }
 
-    [EnsureUserIsValid(new[] { "userId" })]
+    //[EnsureUserIsValid(new[] { "userId" })]
     public async Task<BaseControllerResponse<SingleUserResponse>> GetUserDtoByIdOrThrowAsync(Guid userId)
     {
         var user = await _userRepository.GetUserWithRoleByIdAsync(userId);
