@@ -8,9 +8,6 @@ public static class CacheKeys
     public const string ProductsPrefix = $"{Prefix}:products";
     public const string ProductsPattern = $"{Prefix}:products:*";
 
-    public const string StorefrontVendorsPrefix = $"{Prefix}:storefront:vendors";
-    public const string StorefrontVendorDetailPrefix = $"{Prefix}:storefront:vendor";
-
     public const string PermissionsPrefix = $"{Prefix}:permissions";
     public const string PermissionsPattern = $"{Prefix}:permissions:*";
 

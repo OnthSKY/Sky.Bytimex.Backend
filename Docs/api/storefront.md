@@ -7,7 +7,7 @@
 
 **Request**
 - **Route params:** none
-- **Query params:** supports `filters[vendor_slug]`
+- **Query params:** none
 - **Body:** `none`
 
 **Response**
@@ -26,27 +26,4 @@
 
   const { data } = await clientFetch<ProductListResponse>("/api/user/products/v1");
   ```
-
-### VendorsController — GET /api/storefront/v1/vendors
-**Module:** Storefront
-**Auth:** AllowAnonymous
-**Summary:** List public vendors
-
-**Request**
-- **Query params:** supports pagination, search, and `filters[slug]`
-
-**Response**
-- **200 OK:** `VendorListPaginatedResponse`
-
-### VendorsController — GET /api/storefront/v1/vendors/detail
-**Module:** Storefront
-**Auth:** AllowAnonymous
-**Summary:** Get vendor by slug or id
-
-**Request**
-- **Query params:** `slug` or `id`
-
-**Response**
-- **200 OK:** `VendorDetailResponse`
-- **404:** Vendor not found
 
