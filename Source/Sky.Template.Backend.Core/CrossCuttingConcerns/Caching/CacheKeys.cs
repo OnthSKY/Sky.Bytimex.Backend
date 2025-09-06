@@ -12,6 +12,11 @@ public static class CacheKeys
     public const string PermissionsPattern = $"{Prefix}:permissions:*";
 
     public static string Role(int id, string culture) => $"{Prefix}:roles:{culture}:{id}";
+    public const string SelfProfilePrefix = $"{Prefix}:selfprofile";
+    public const string SelfProfilePattern = $"{Prefix}:selfprofile:*";
+    public const string SelfPermissionsPrefix = $"{Prefix}:selfpermissions";
+    public const string SelfPermissionsPattern = $"{Prefix}:selfpermissions:*";
+
     public const string RolesPrefix = $"{Prefix}:roles";
     public const string RolesPattern = $"{Prefix}:roles:*";
 

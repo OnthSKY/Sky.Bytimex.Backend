@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoFixture;
@@ -7,10 +7,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Sky.Template.Backend.Application.Services.User;
-using Sky.Template.Backend.Contract.Requests.AdminUsers;
+using Sky.Template.Backend.Contract.Requests.Users;
 using Sky.Template.Backend.Core.BaseResponse;
 using Sky.Template.Backend.Contract.Responses.UserResponses;
-using Sky.Template.Backend.Contract.Requests.Users;
 using Sky.Template.Backend.WebAPI.Controllers.User;
 using Xunit;
 
@@ -21,21 +20,20 @@ public class SelfUserControllerTests
     private readonly Fixture _fixture = new();
 
     [Fact]
-     public async Task UpdateProfile_ReturnsOk()
+    public async Task UpdateProfile_ReturnsOk()
     {
         // Arrange
         var serviceMock = new Mock<IUserService>();
         var req = _fixture.Create<SelfUpdateProfileRequest>();
 
-        var expectedUserId = Guid.NewGuid(); // Sabit ID belirle
+        var expectedUserId = Guid.NewGuid();
         var response = ControllerResponseBuilder.Success(new SingleUserResponse());
         serviceMock
-            .Setup(s => s.UpdateUserAsync(It.IsAny<UpdateUserRequest>()))
+            .Setup(s => s.UpdateSelfProfileAsync(expectedUserId, It.IsAny<SelfUpdateProfileRequest>()))
             .ReturnsAsync(response);
 
         var controller = new SelfUserController(serviceMock.Object);
 
-        // Sahte HttpContext ve User Claims oluştur
         var httpContext = new DefaultHttpContext();
         httpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[]
         {
@@ -52,14 +50,7 @@ public class SelfUserControllerTests
 
         // Assert
         result.Should().BeOfType<OkObjectResult>();
-
-        // Doğru ID gönderilmiş mi kontrol et
-        serviceMock.Verify(s =>
-            s.UpdateUserAsync(It.Is<UpdateUserRequest>(r =>
-                r.Id == expectedUserId &&
-                r.FirstName == req.FirstName &&
-                r.LastName == req.LastName
-            )), Times.Once);
+        serviceMock.Verify(s => s.UpdateSelfProfileAsync(expectedUserId, It.Is<SelfUpdateProfileRequest>(r =>
+            r.FirstName == req.FirstName && r.LastName == req.LastName)), Times.Once);
     }
-
 }
