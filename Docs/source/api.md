@@ -136,3 +136,20 @@ Module: Storefront
 - **Response:** `ProductListResponse`
 - **Auth:** AllowAnonymous
 
+- **Auth:** AllowAnonymous
+
+### VendorsController
+Module: Storefront
+
+- **Endpoint:** `GET /api/storefront/v1/vendors`
+- **Frontend Usage:** Vendor listing
+- **Request:** Query `GridRequest`
+- **Response:** `VendorListPaginatedResponse`
+- **Auth:** AllowAnonymous
+
+- **Endpoint:** `GET /api/storefront/v1/vendors/detail`
+- **Frontend Usage:** Vendor detail
+- **Request:** Query `slug` or `id`
+- **Response:** `VendorDetailResponse`
+- **Auth:** AllowAnonymous
+

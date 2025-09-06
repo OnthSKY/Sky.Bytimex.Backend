@@ -169,9 +169,15 @@ public static class DatabaseInitializer
                     CREATE TABLE IF NOT EXISTS sys.vendors (
                     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                     name VARCHAR(255) NOT NULL UNIQUE,
+                    slug TEXT UNIQUE NOT NULL,
+                    short_description TEXT,
+                    logo_url TEXT,
+                    banner_url TEXT,
                     email VARCHAR(255),
                     phone VARCHAR(50),
                     address TEXT,
+                    rating_avg NUMERIC(3,2) DEFAULT 0.00,
+                    rating_count INT DEFAULT 0,
                     status status_enum DEFAULT 'ACTIVE',
                     created_by UUID REFERENCES sys.users(id) ON DELETE SET NULL,
                     updated_by UUID REFERENCES sys.users(id) ON DELETE SET NULL,
@@ -197,6 +203,9 @@ public static class DatabaseInitializer
                       END IF;
                     END;
                     $$;
+
+                    CREATE INDEX IF NOT EXISTS idx_vendors_status ON sys.vendors(status);
+                    CREATE INDEX IF NOT EXISTS idx_vendors_slug ON sys.vendors (lower(slug));
 
 
 
@@ -559,6 +568,7 @@ public static class DatabaseInitializer
                     CREATE INDEX IF NOT EXISTS idx_products_brand ON sys.products(brand_id);
                     CREATE INDEX IF NOT EXISTS idx_products_category ON sys.products(category_id);
                     CREATE INDEX IF NOT EXISTS idx_products_vendor   ON sys.products(vendor_id);
+                    CREATE INDEX IF NOT EXISTS idx_products_vendor_status ON sys.products(vendor_id, status);
                     CREATE INDEX IF NOT EXISTS idx_products_status   ON sys.products(status) WHERE is_deleted = FALSE;
                     CREATE INDEX IF NOT EXISTS idx_products_active   ON sys.products(id) WHERE is_deleted = FALSE AND status = 'ACTIVE';
                     CREATE INDEX IF NOT EXISTS idx_product_trans_pid_lang ON sys.product_translations(product_id, language_code);
